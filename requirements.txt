@@ -182,7 +182,7 @@ pillow==10.1.0
     # via
     #   contextily
     #   matplotlib
-platformdirs==3.5.1
+platformdirs==3.11.0
     # via
     #   black
     #   py-vibracore (pyproject.toml)
