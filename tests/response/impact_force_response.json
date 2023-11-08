@@ -1,0 +1,25 @@
+{
+  "features": [
+    {
+      "geometry": {
+        "coordinates": [
+          142892.19,
+          470783.87
+        ],
+        "type": "Point"
+      },
+      "id": "CPT-001",
+      "properties": {
+        "Q90": 5.822596716084852,
+        "Q95": 5.822596716084852,
+        "base": null,
+        "depth": -4.85,
+        "max": 5.822596716084852,
+        "x": 142892.19,
+        "y": 470783.87
+      },
+      "type": "Feature"
+    }
+  ],
+  "type": "FeatureCollection"
+}

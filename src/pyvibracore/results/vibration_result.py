@@ -1,0 +1,337 @@
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass
+from typing import Any, Tuple
+
+import geopandas as gpd
+import matplotlib.patches as patches
+import matplotlib.pyplot as plt
+import numpy as np
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
+from shapely.geometry import LineString, Point, Polygon
+
+
+def _north_arrow(axes: plt.Axes) -> None:
+    x, y, arrow_length = 0.05, 0.98, 0.1
+    axes.annotate(
+        "N",
+        xy=(x, y),
+        xytext=(x, y - arrow_length),
+        arrowprops=dict(facecolor="black", width=5, headwidth=15),
+        ha="center",
+        va="center",
+        fontsize=20,
+        xycoords=axes.transAxes,
+    )
+
+
+def _scalebar(axes: plt.Axes) -> None:
+    scalebar = AnchoredSizeBar(
+        axes.transData,
+        20,
+        "20 m",
+        "lower left",
+        pad=1,
+        color="black",
+        frameon=True,
+        size_vertical=2,
+    )
+
+    axes.add_artist(scalebar)
+
+
+@dataclass(frozen=True)
+class VibrationResults:
+    gdf: gpd.GeoDataFrame
+
+    @classmethod
+    def from_api_response(cls, response_dict: dict) -> "VibrationResults":
+        """
+        Stores the response of the VibraCore endpoint
+
+        Parameters
+        ----------
+        response_dict:
+           The resulting response of a call to `/cur166/validation/multi` or `/prepal/validation/multi`
+        """
+        return cls(
+            gpd.read_file(json.dumps(response_dict), driver="GeoJSON").set_crs(
+                "EPSG:28992", allow_override=True
+            )
+        )
+
+    def map(
+        self,
+        source_location: Point | LineString | Polygon,
+        title: str = "Legend:",
+        figsize: Tuple[float, float] = (10.0, 12.0),
+        settings: dict | None = None,
+        **kwargs: Any,
+    ):
+        if settings is None:
+            settings = {
+                "source_location": {"label": "Trillingsbron", "color": "black"},
+                "insufficient_cat1": {
+                    "label": "Voldoet Niet - Cat.1",
+                    "color": "orange",
+                },
+                "insufficient_cat2": {"label": "Voldoet Niet - Cat.2", "color": "red"},
+                "sufficient": {"label": "Voldoet", "color": "green"},
+            }
+
+        kwargs_subplot = {
+            "figsize": figsize,
+            "tight_layout": True,
+        }
+
+        kwargs_subplot.update(kwargs)
+
+        fig, axes = plt.subplots(**kwargs_subplot)
+
+        gpd.GeoSeries(source_location).plot(
+            ax=axes,
+            color=settings["source_location"]["color"],
+            alpha=1,
+            zorder=1,
+            aspect=1,
+        )
+
+        # plot category 1 zone of influence
+        self.gdf.where(
+            np.logical_and(self.gdf["cat"] == "one", ~self.gdf["check"])
+        ).plot(
+            ax=axes, zorder=2, color=settings["insufficient_cat1"]["color"], aspect=1
+        )
+        self.gdf.where(
+            np.logical_and(self.gdf["cat"] == "two", ~self.gdf["check"])
+        ).plot(
+            ax=axes, zorder=2, color=settings["insufficient_cat2"]["color"], aspect=1
+        )
+        self.gdf.where(self.gdf.check).plot(
+            ax=axes, zorder=2, color=settings["sufficient"]["color"], aspect=1
+        )
+        self.gdf.where(self.gdf.check).buffer(self.gdf.x_required).plot(
+            ax=axes, alpha=0.25, zorder=1, aspect=1
+        )
+        self.gdf.where(~self.gdf.check).buffer(self.gdf.x_required).plot(
+            ax=axes, alpha=0.6, zorder=1, aspect=1
+        )
+
+        for idx, row in self.gdf.iterrows():
+            x = row.geometry.centroid.xy[0][0]
+            y = row.geometry.centroid.xy[1][0]
+
+            axes.annotate(
+                idx,
+                xy=(x, y),
+                horizontalalignment="center",
+            )
+
+        # add legend
+        axes.legend(
+            title=title,
+            title_fontsize=18,
+            fontsize=15,
+            loc="lower right",
+            handles=[
+                patches.Patch(
+                    facecolor=value["color"],
+                    label=value["label"],
+                    alpha=0.9,
+                    linewidth=2,
+                    edgecolor="black",
+                )
+                for value in settings.values()
+            ],
+        )
+
+        _north_arrow(axes)
+        _scalebar(axes)
+
+        return fig
+
+
+def map_payload(
+    gdf: gpd.GeoDataFrame,
+    source_location: Point | LineString | Polygon,
+    title: str = "Legend:",
+    figsize: Tuple[float, float] = (10.0, 12.0),
+    settings: dict | None = None,
+    **kwargs: Any,
+):
+    if settings is None:
+        settings = {
+            "source_location": {"label": "Trillingsbron", "color": "black"},
+            "sensitive_cat1": {
+                "label": "Monumentaal/ gevoelig - Cat.1",
+                "color": "blue",
+            },
+            "sensitive_cat2": {
+                "label": "Monumentaal/ gevoelig - Cat.2",
+                "color": "cyan",
+            },
+            "normal_cat1": {"label": "Normaal - Cat.1", "color": "orange"},
+            "normal_cat2": {"label": "Normaal - Cat.2", "color": "olive"},
+        }
+
+    kwargs_subplot = {
+        "figsize": figsize,
+        "tight_layout": True,
+    }
+
+    kwargs_subplot.update(kwargs)
+
+    fig, axes = plt.subplots(**kwargs_subplot)
+
+    gpd.GeoSeries(source_location).plot(
+        ax=axes, color=settings["source_location"]["color"], alpha=1, zorder=1, aspect=1
+    )
+
+    gdf.where(
+        np.logical_and(
+            gdf["category"] == "one",
+            np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
+        )
+    ).plot(ax=axes, zorder=2, color=settings["sensitive_cat1"]["color"], aspect=1)
+    gdf.where(
+        np.logical_and(
+            gdf["category"] == "one",
+            ~np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
+        )
+    ).plot(ax=axes, zorder=2, color=settings["sensitive_cat1"]["color"], aspect=1)
+    gdf.where(
+        np.logical_and(
+            gdf["category"] == "two",
+            np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
+        )
+    ).plot(ax=axes, zorder=2, color=settings["sensitive_cat2"]["color"], aspect=1)
+    gdf.where(
+        np.logical_and(
+            gdf["category"] == "two",
+            ~np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
+        )
+    ).plot(ax=axes, zorder=2, color=settings["normal_cat2"]["color"], aspect=1)
+
+    for idx, row in gdf.iterrows():
+        x = row.geometry.centroid.xy[0][0]
+        y = row.geometry.centroid.xy[1][0]
+
+        axes.annotate(
+            idx,
+            xy=(x, y),
+            horizontalalignment="center",
+        )
+
+    # add legend
+    axes.legend(
+        title=title,
+        title_fontsize=18,
+        fontsize=15,
+        loc="lower right",
+        handles=[
+            patches.Patch(
+                facecolor=value["color"],
+                label=value["label"],
+                alpha=0.9,
+                linewidth=2,
+                edgecolor="black",
+            )
+            for value in settings.values()
+        ],
+    )
+
+    _north_arrow(axes)
+    _scalebar(axes)
+
+    return fig
+
+
+def plot_reduction(
+    response_dict: dict,
+    sensitive: bool = False,
+    figsize: Tuple[float, float] = (8, 8),
+    **kwargs: Any,
+):
+    kwargs_subplot = {
+        "figsize": figsize,
+        "tight_layout": True,
+    }
+
+    kwargs_subplot.update(kwargs)
+
+    fig, axes = plt.subplots(**kwargs_subplot)
+
+    axes.axvline(
+        x=response_dict["calculation"]["distance"],
+        linestyle="-",
+        label="Building distance",
+        color="green",
+    )
+
+    # normal
+    axes.axhline(
+        y=response_dict["calculation"]["failureValueVibrationVelocity"],
+        linestyle="-",
+        label="Vr",
+        color="orange",
+    )
+    axes.axvline(
+        x=response_dict["calculation"]["distanceRequired"],
+        linestyle="-",
+        label="Distance required",
+        color="black",
+    )
+    axes.plot(
+        response_dict["data"]["distance"],
+        response_dict["data"]["vibrationVelocity"],
+        linestyle="-",
+        label="Vd",
+        color="blue",
+    )
+
+    # sensitive
+    if sensitive:
+        axes.axhline(
+            y=response_dict["calculation"][
+                "failureValueVibrationVelocityVibrationSensitive"
+            ],
+            linestyle="--",
+            label="Vr",
+            color="orange",
+        )
+        axes.axvline(
+            x=response_dict["calculation"][
+                "distanceRequiredVelocityVibrationSensitive"
+            ],
+            linestyle="--",
+            label="Distance required",
+            color="black",
+        )
+        # excitation
+        axes.axhline(
+            y=response_dict["calculation"]["failureValueExcitationVelocity"],
+            linestyle="--",
+            label="Vr",
+            color="orange",
+        )
+        axes.axvline(
+            x=response_dict["calculation"]["distanceRequiredExcitationVelocity"],
+            linestyle="--",
+            label="Distance required",
+            color="black",
+        )
+        axes.plot(
+            response_dict["data"]["distance"],
+            response_dict["data"]["vibrationVelocityVibrationSensitive"],
+            linestyle="--",
+            label="Vd",
+            color="blue",
+        )
+
+    axes.set_xlabel("Distance from source [m]")
+    axes.set_ylabel("Vibration velocity [mm/s]")
+    axes.set_xlim(0, 50)
+    axes.set_ylim(0, 30)
+
+    return fig
