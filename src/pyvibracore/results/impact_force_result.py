@@ -160,13 +160,13 @@ class ImpactForceTable:
 
     betaFrictionalResistance: Sequence[float] | None
     betaPointResistance: Sequence[float] | None
-    correctedConeResistance: Sequence[float]
-    depthOffset: Sequence[float]
-    frictionalResistance: Sequence[float]
-    pointResistance: Sequence[float]
+    correctedConeResistance: Sequence[float] | None
+    depthOffset: Sequence[float] | None
+    frictionalResistance: Sequence[float] | None
+    pointResistance: Sequence[float] | None
     sheetResistance: Sequence[float] | None
-    slotResistance: Sequence[float]
-    totalResistance: Sequence[float]
+    slotResistance: Sequence[float] | None
+    totalResistance: Sequence[float] | None
 
     def __post_init__(self) -> None:
         raw_lengths = []

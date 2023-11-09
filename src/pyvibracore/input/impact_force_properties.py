@@ -73,8 +73,8 @@ class VibrationSource:
             )
 
         return cls(
-            areaShaftSpecific=props.get("area_shaft_specific"),
-            areaTipSpecific=props.get("area_tip_specific"),
+            areaShaftSpecific=props.get("area_shaft_specific"),  # type: ignore
+            areaTipSpecific=props.get("area_tip_specific"),  # type: ignore
             amountOfSheetPiles=amount_of_sheet_piles,
             slotResistanceSpecific=slot_resistance_specific,
             sheetPileName=name,

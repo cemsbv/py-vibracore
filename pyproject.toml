@@ -84,7 +84,16 @@ strict_equality = true
 install_types = true
 
 [[tool.mypy.overrides]]
-module = ["matplotlib.*", "requests.*", "pytest.*"]
+module = [
+    "matplotlib.*",
+    "requests.*",
+    "pytest.*",
+    "geopandas.*",
+    "shapely.*",
+    "pygef.*",
+    "mpl_toolkits.*",
+    "nuclei.*"
+]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

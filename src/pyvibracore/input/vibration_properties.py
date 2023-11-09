@@ -156,7 +156,7 @@ def create_prepal_payload(
     frequency_vibration_sensitive: float = 40.0,
     measurement_type: Literal["indicative", "limited", "extensive"] = "extensive",
     hysteretic_damping_barkan: float = -0.05,
-):
+) -> dict:
     """
     Create payload for VibraCore call `cur166/validation/multi`
 
@@ -295,7 +295,7 @@ def create_cur166_payload(
     ] = "Amsterdam",
     measurement_type: Literal["indicative", "limited", "extensive"] = "extensive",
     methode_safety_factor: Literal["CUR", "exact"] = "exact",
-):
+) -> dict:
     """
     Create payload for VibraCore call `cur166/validation/multi`
 

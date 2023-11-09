@@ -18,7 +18,7 @@ def test_vibration_source():
 
 
 def test_create_multi_cpt_impact_force_payload(cpt, mock_classify_response):
-    payload = create_multi_cpt_impact_force_payload(
+    create_multi_cpt_impact_force_payload(
         [cpt],
         {"S-TUN-016-PG": mock_classify_response},
         VibrationSource.from_sheet_pile_name("AZ12-770"),
