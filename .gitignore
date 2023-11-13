@@ -25,6 +25,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+.idea/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -70,6 +71,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+public/
 
 # PyBuilder
 .pybuilder/
@@ -77,6 +79,8 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+notebooks/*.pdf
+notebooks/dataframe.geojson
 
 # IPython
 profile_default/
