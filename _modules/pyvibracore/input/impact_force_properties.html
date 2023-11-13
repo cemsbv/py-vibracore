@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyvibracore.input.impact_force_properties &mdash; py-vibracore 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/index.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            py-vibracore
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tree/getting_started.html">Installing py-vibracore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tree/getting_started.html#how-to-import-py-vibracore">How to import py-vibracore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tree/reference.html">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">py-vibracore</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyvibracore.input.impact_force_properties</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyvibracore.input.impact_force_properties</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pygef.cpt</span> <span class="kn">import</span> <span class="n">CPTData</span>
+
+<span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">SHEETPILE_REFERENCE_PROFILES</span>
+
+<span class="n">CustomInterval</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">UnitWeightWater</span> <span class="o">=</span> <span class="mf">9.81</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">VibrationSource</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    -----------</span>
+<span class="sd">    areaShaftSpecific: float</span>
+<span class="sd">        Specific shaft area of the single sheet pile (1 sheet) per unit length [m^2/m].</span>
+<span class="sd">    areaTipSpecific: float</span>
+<span class="sd">        Specific tip area of the single sheet pile (1 sheet) [m^2].</span>
+<span class="sd">    amountOfSheetPiles: int = 1</span>
+<span class="sd">        Number of sheets</span>
+<span class="sd">            - push = 1</span>
+<span class="sd">            - vibrate = 2</span>
+<span class="sd">    slotResistanceSpecific: float</span>
+<span class="sd">        Specific sheet pile slot resistance [kN/m] based on CUR 166 6th edition.</span>
+<span class="sd">        for new sheet piles:</span>
+<span class="sd">            - push = 5</span>
+<span class="sd">            - vibrate = 10</span>
+<span class="sd">    sheetPileName: str = &quot;User defined&quot;</span>
+<span class="sd">        Sheet pile name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">areaShaftSpecific</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">areaTipSpecific</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">slotResistanceSpecific</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">amountOfSheetPiles</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">sheetPileName</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;User defined&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_sheet_pile_name</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">amount_of_sheet_piles</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">slot_resistance_specific</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;VibrationSource&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name: str</span>
+<span class="sd">            Sheet pile name</span>
+<span class="sd">        amount_of_sheet_piles: int = 1</span>
+<span class="sd">            Number of sheets</span>
+<span class="sd">        slot_resistance_specific: float = 10</span>
+<span class="sd">            Specific sheet pile slot resistance [kN/m] based on CUR 166 6th edition.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        VibrationSource</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">props</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">SHEETPILE_REFERENCE_PROFILES</span> <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">),</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">props</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not a valid sheet pile name. &quot;</span>
+                <span class="s2">&quot;Please specify the areaShaftSpecific and areaTipSpecific in the &quot;</span>
+                <span class="s2">&quot;main class or update the SHEETPILE_REFERENCE_PROFILES table.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">areaShaftSpecific</span><span class="o">=</span><span class="n">props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;area_shaft_specific&quot;</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="n">areaTipSpecific</span><span class="o">=</span><span class="n">props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;area_tip_specific&quot;</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="n">amountOfSheetPiles</span><span class="o">=</span><span class="n">amount_of_sheet_piles</span><span class="p">,</span>
+            <span class="n">slotResistanceSpecific</span><span class="o">=</span><span class="n">slot_resistance_specific</span><span class="p">,</span>
+            <span class="n">sheetPileName</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<div class="viewcode-block" id="create_multi_cpt_impact_force_payload"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.input.impact_force_properties.create_multi_cpt_impact_force_payload">[docs]</a><span class="k">def</span> <span class="nf">create_multi_cpt_impact_force_payload</span><span class="p">(</span>
+    <span class="n">cptdata_objects</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CPTData</span><span class="p">],</span>
+    <span class="n">classify_tables</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">],</span>
+    <span class="n">vibration_source</span><span class="p">:</span> <span class="n">VibrationSource</span><span class="p">,</span>
+    <span class="n">friction_strategy</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;CPTFrictionStrategy&quot;</span><span class="p">,</span> <span class="s2">&quot;SlipFrictionStrategy&quot;</span><span class="p">],</span>
+    <span class="n">drive_strategy</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;vibrate&quot;</span><span class="p">,</span> <span class="s2">&quot;push&quot;</span><span class="p">],</span>
+    <span class="n">installation_level_offset</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">zeta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a dictionary with the payload content for the VibraCore endpoint</span>
+<span class="sd">    &quot;/impact-force/calculation/multi&quot;</span>
+
+<span class="sd">    This dictionary can be passed directly to `nuclei.client.call_endpoint()`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cptdata_objects:</span>
+<span class="sd">        A list of pygef.CPTData objects</span>
+<span class="sd">    classify_tables:</span>
+<span class="sd">        A dictionary, mapping `CPTData.alias` values to dictionary with the resulting response</span>
+<span class="sd">        of a call to CPTCore `classify/*` information, containing the following keys:</span>
+
+<span class="sd">            - geotechnicalSoilName: Sequence[str]</span>
+<span class="sd">                Geotechnical Soil Name related to the ISO</span>
+<span class="sd">            - lowerBoundary: Sequence[float]</span>
+<span class="sd">                Lower boundary of the layer [m]</span>
+<span class="sd">            - upperBoundary: Sequence[float]</span>
+<span class="sd">                Upper boundary of the layer [m]</span>
+<span class="sd">            - color: Sequence[str]</span>
+<span class="sd">                Hex color code</span>
+<span class="sd">            - mainComponent: Sequence[Literal[&quot;rocks&quot;, &quot;gravel&quot;, &quot;sand&quot;, &quot;silt&quot;, &quot;clay&quot;, &quot;peat&quot;]]</span>
+<span class="sd">                Main soil component</span>
+<span class="sd">            - cohesion: Sequence[float]</span>
+<span class="sd">                Cohesion of the layer [kPa]</span>
+<span class="sd">            - gamma_sat: Sequence[float]</span>
+<span class="sd">                Saturated unit weight [kN/m^3]</span>
+<span class="sd">            - gamma_unsat: Sequence[float]</span>
+<span class="sd">                Unsaturated unit weight [kN/m^3]</span>
+<span class="sd">            - phi: Sequence[float]</span>
+<span class="sd">                Phi [degrees]</span>
+<span class="sd">            - undrainedShearStrength: Sequence[float]</span>
+<span class="sd">                Undrained shear strength [kPa]</span>
+<span class="sd">    vibration_source: VibrationSource</span>
+<span class="sd">        Vibration source object</span>
+<span class="sd">    friction_strategy: Literal[&quot;CPTFrictionStrategy&quot;, &quot;SlipFrictionStrategy&quot;]</span>
+<span class="sd">        Defines the strategy on how to compute the sleeve friction:</span>
+
+<span class="sd">            - CPTFrictionStrategy</span>
+
+<span class="sd">        The CPT Friction Strategy takes the sleeve friction provided by the cpt.</span>
+<span class="sd">        Note that this method is only valid when the sleeve friction is provided within</span>
+<span class="sd">        the cpt object.</span>
+
+<span class="sd">            - SlipFrictionStrategy</span>
+
+<span class="sd">        The Slip Friction Strategy calculated the sleeve friction based on the gamma,</span>
+<span class="sd">        gamma saturation, phi and the undrained shear strength. To use this methode the</span>
+<span class="sd">        values must be provided within the cpt object.</span>
+<span class="sd">    drive_strategy: Literal[&quot;vibrate&quot;, &quot;push&quot;]</span>
+<span class="sd">        Defines the strategy on how to compute the impact force:</span>
+
+<span class="sd">            - vibrate</span>
+
+<span class="sd">        The vibration strategy calculates the impact force based on a vibration installation method.</span>
+
+<span class="sd">            - push</span>
+
+<span class="sd">        The push strategy calculates the impact force based on a push installation method.</span>
+<span class="sd">    installation_level_offset: float</span>
+<span class="sd">        Installation level of the sheet pile [m w.r.t REF]</span>
+<span class="sd">    zeta: float = 0.6</span>
+<span class="sd">        verknedingsfactor [-], used in the push drive strategy based on CUR 166 6th edition.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    payload: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;soilProperties&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;cptObject&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;coneResistance&quot;</span><span class="p">:</span> <span class="n">cpt</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="s2">&quot;coneResistance&quot;</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower_bound</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">upper_bound</span><span class="o">=</span><span class="mf">1e10</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+                    <span class="s2">&quot;depthOffset&quot;</span><span class="p">:</span> <span class="n">cpt</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="s2">&quot;depthOffset&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+                    <span class="s2">&quot;localFriction&quot;</span><span class="p">:</span> <span class="n">cpt</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_column</span><span class="p">(</span><span class="s2">&quot;localFriction&quot;</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower_bound</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">upper_bound</span><span class="o">=</span><span class="mf">1e10</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">to_list</span><span class="p">(),</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">cpt</span><span class="o">.</span><span class="n">alias</span><span class="p">,</span>
+                    <span class="s2">&quot;verticalPositionOffset&quot;</span><span class="p">:</span> <span class="n">cpt</span><span class="o">.</span><span class="n">delivered_vertical_position_offset</span><span class="p">,</span>
+                    <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">cpt</span><span class="o">.</span><span class="n">delivered_location</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+                    <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">cpt</span><span class="o">.</span><span class="n">delivered_location</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;customInterval&quot;</span><span class="p">:</span> <span class="n">CustomInterval</span><span class="p">,</span>
+                <span class="s2">&quot;groundwaterLevelOffset&quot;</span><span class="p">:</span> <span class="n">cpt</span><span class="o">.</span><span class="n">groundwater_level_offset</span>
+                <span class="k">if</span> <span class="n">cpt</span><span class="o">.</span><span class="n">groundwater_level_offset</span>
+                <span class="k">else</span> <span class="n">cpt</span><span class="o">.</span><span class="n">delivered_vertical_position_offset</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;layerTable&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;gamma_sat&quot;</span><span class="p">:</span> <span class="n">classify_tables</span><span class="p">[</span><span class="n">cpt</span><span class="o">.</span><span class="n">alias</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gamma_sat&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;gamma_unsat&quot;</span><span class="p">:</span> <span class="n">classify_tables</span><span class="p">[</span><span class="n">cpt</span><span class="o">.</span><span class="n">alias</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gamma_unsat&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;phi&quot;</span><span class="p">:</span> <span class="n">classify_tables</span><span class="p">[</span><span class="n">cpt</span><span class="o">.</span><span class="n">alias</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;phi&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;soilcode&quot;</span><span class="p">:</span> <span class="n">classify_tables</span><span class="p">[</span><span class="n">cpt</span><span class="o">.</span><span class="n">alias</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mainComponent&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;undrainedShearStrength&quot;</span><span class="p">:</span> <span class="n">classify_tables</span><span class="p">[</span><span class="n">cpt</span><span class="o">.</span><span class="n">alias</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="s2">&quot;undrainedShearStrength&quot;</span>
+                    <span class="p">),</span>
+                    <span class="s2">&quot;upperBoundary&quot;</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="n">cpt</span><span class="o">.</span><span class="n">delivered_vertical_position_offset</span>
+                        <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">classify_tables</span><span class="p">[</span><span class="n">cpt</span><span class="o">.</span><span class="n">alias</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;upperBoundary&quot;</span><span class="p">))</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;unitWeightWater&quot;</span><span class="p">:</span> <span class="n">UnitWeightWater</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">cpt</span> <span class="ow">in</span> <span class="n">cptdata_objects</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;vibrationSource&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;areaShaftSpecific&quot;</span><span class="p">:</span> <span class="n">vibration_source</span><span class="o">.</span><span class="n">areaShaftSpecific</span><span class="p">,</span>
+            <span class="s2">&quot;areaTipSpecific&quot;</span><span class="p">:</span> <span class="n">vibration_source</span><span class="o">.</span><span class="n">areaTipSpecific</span><span class="p">,</span>
+            <span class="s2">&quot;numSheets&quot;</span><span class="p">:</span> <span class="n">vibration_source</span><span class="o">.</span><span class="n">amountOfSheetPiles</span><span class="p">,</span>
+            <span class="s2">&quot;sheetPileName&quot;</span><span class="p">:</span> <span class="n">vibration_source</span><span class="o">.</span><span class="n">sheetPileName</span><span class="p">,</span>
+            <span class="s2">&quot;slotResistanceSpecific&quot;</span><span class="p">:</span> <span class="n">vibration_source</span><span class="o">.</span><span class="n">slotResistanceSpecific</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;frictionStrategy&quot;</span><span class="p">:</span> <span class="n">friction_strategy</span><span class="p">,</span>
+        <span class="s2">&quot;impactForceCalculation&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;driveStrategy&quot;</span><span class="p">:</span> <span class="n">drive_strategy</span><span class="p">,</span>
+            <span class="s2">&quot;installationLevel&quot;</span><span class="p">:</span> <span class="n">installation_level_offset</span><span class="p">,</span>
+            <span class="s2">&quot;zeta&quot;</span><span class="p">:</span> <span class="n">zeta</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">payload</span></div>
+
+
+<div class="viewcode-block" id="create_multi_cpt_impact_force_report_payload"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.input.impact_force_properties.create_multi_cpt_impact_force_report_payload">[docs]</a><span class="k">def</span> <span class="nf">create_multi_cpt_impact_force_report_payload</span><span class="p">(</span>
+    <span class="n">multi_cpt_payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">author</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a dictionary with the payload content for the VibraCore endpoint</span>
+<span class="sd">    &quot;/impact-force/report&quot;</span>
+
+<span class="sd">    This dictionary can be passed directly to `nuclei.client.call_endpoint()`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    multi_cpt_payload:</span>
+<span class="sd">        The result of a call to `create_multi_cpt_impact_force_payload()`</span>
+<span class="sd">    project_name:</span>
+<span class="sd">        The name of the project.</span>
+<span class="sd">    project_id:</span>
+<span class="sd">        The identifier (code) of the project.</span>
+<span class="sd">    author:</span>
+<span class="sd">        The author of the report.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    payload: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">multi_cpt_payload</span><span class="p">)</span>
+    <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">reportProperties</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">,</span>
+                <span class="n">projectNumber</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+                <span class="n">projectName</span><span class="o">=</span><span class="n">project_name</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">payload</span></div>
+
+
+<div class="viewcode-block" id="create_single_cpt_impact_force_payload"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.input.impact_force_properties.create_single_cpt_impact_force_payload">[docs]</a><span class="k">def</span> <span class="nf">create_single_cpt_impact_force_payload</span><span class="p">(</span><span class="n">multi_cpt_payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a dictionary with the payload content for the VibraCore endpoint</span>
+<span class="sd">    &quot;/impact-force/calculation/single&quot;</span>
+
+<span class="sd">    This dictionary can be passed directly to `nuclei.client.call_endpoint()`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    multi_cpt_payload: dict</span>
+<span class="sd">        The result of a call to `create_multi_cpt_impact_force_payload()`</span>
+<span class="sd">    name: str</span>
+<span class="sd">        CPT name</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    payload: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">multi_cpt_payload</span><span class="p">)</span>
+
+    <span class="n">props</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">item</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;soilProperties&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;cptObject&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span>
+        <span class="p">),</span>
+        <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">props</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not a valid CPT name.&quot;</span><span class="p">)</span>
+    <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">soilProperties</span><span class="o">=</span><span class="n">props</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">payload</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, CEMS BV.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

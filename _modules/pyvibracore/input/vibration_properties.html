@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyvibracore.input.vibration_properties &mdash; py-vibracore 0.0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/index.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            py-vibracore
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tree/getting_started.html">Installing py-vibracore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tree/getting_started.html#how-to-import-py-vibracore">How to import py-vibracore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tree/reference.html">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">py-vibracore</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyvibracore.input.vibration_properties</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pyvibracore.input.vibration_properties</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
+
+<span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">mapping</span>
+
+<span class="kn">from</span> <span class="nn">.constants</span> <span class="kn">import</span> <span class="n">SOIL_REFERENCE</span>
+
+<span class="n">BAG_WFS_URL</span> <span class="o">=</span> <span class="s2">&quot;https://service.pdok.nl/lv/bag/wfs/v2_0&quot;</span>
+<span class="n">THRESHOLD</span> <span class="o">=</span> <span class="mi">10000</span>
+
+
+<div class="viewcode-block" id="get_buildings_geodataframe"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.input.vibration_properties.get_buildings_geodataframe">[docs]</a><span class="k">def</span> <span class="nf">get_buildings_geodataframe</span><span class="p">(</span>
+    <span class="n">west</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">south</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">east</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">north</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">category</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="s2">&quot;two&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;two&quot;</span><span class="p">,</span>
+    <span class="n">monumental</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">structural_condition</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sensitive&quot;</span><span class="p">,</span> <span class="s2">&quot;normal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span><span class="p">,</span>
+    <span class="n">vibration_sensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">thickness</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">8.0</span><span class="p">,</span>
+    <span class="n">foundation_element</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+        <span class="s2">&quot;shallow foundation&quot;</span><span class="p">,</span> <span class="s2">&quot;concrete piles&quot;</span><span class="p">,</span> <span class="s2">&quot;timber piles&quot;</span><span class="p">,</span> <span class="s2">&quot;steel piles&quot;</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;shallow foundation&quot;</span><span class="p">,</span>
+    <span class="n">material_floor</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;concrete&quot;</span><span class="p">,</span> <span class="s2">&quot;wood&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;concrete&quot;</span><span class="p">,</span>
+    <span class="n">feature</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+        <span class="s2">&quot;bag:pand&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bag:ligplaats&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bag:verblijfsobject&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bag:woonplaats&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bag:standplaats&quot;</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bag:pand&quot;</span><span class="p">,</span>
+    <span class="n">pagesize</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;10&quot;</span><span class="p">,</span> <span class="s2">&quot;20&quot;</span><span class="p">,</span> <span class="s2">&quot;50&quot;</span><span class="p">,</span> <span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;1000&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1000&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a GeoDataFrame with the default values for CUR166 and PrePal methode.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    west:</span>
+<span class="sd">        west coordinate in rd new (EPSG:28992)</span>
+<span class="sd">    south:</span>
+<span class="sd">        south coordinate in rd new (EPSG:28992)</span>
+<span class="sd">    east:</span>
+<span class="sd">        east coordinate in rd new (EPSG:28992)</span>
+<span class="sd">    north:</span>
+<span class="sd">        north coordinate in rd new (EPSG:28992)</span>
+<span class="sd">    category:</span>
+<span class="sd">        Building category based on the SBR A table 10.1.</span>
+<span class="sd">    monumental:</span>
+<span class="sd">        Has the building structure a monumental status. Based on the SBR A table 10.3.</span>
+<span class="sd">    structural_condition:</span>
+<span class="sd">        Based on the SBR A table 10.2.</span>
+<span class="sd">    vibration_sensitive:</span>
+<span class="sd">        Has the building structure a vibration sensitive foundation. Based on the SBR A chapter 10.2.5.</span>
+<span class="sd">    thickness:</span>
+<span class="sd">        Layer thickness settlement-sensitive layer [m]</span>
+<span class="sd">    foundation_element:</span>
+<span class="sd">        Based on CUR 166 3rd edition table 5.19</span>
+<span class="sd">    material_floor:</span>
+<span class="sd">        Based on CUR 166 3rd edition table 5.20</span>
+<span class="sd">    feature:</span>
+<span class="sd">        default is bag:pand</span>
+<span class="sd">        item in the BAG, see https://www.nationaalgeoregister.nl/geonetwork/srv/dut/catalog.search#/metadata/1c0dcc64-91aa-4d44-a9e3-54355556f5e7</span>
+<span class="sd">    pagesize:</span>
+<span class="sd">        Results per page</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    gdf: gpd.GeoDataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">west</span> <span class="o">&gt;</span> <span class="n">east</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;west coordinate is larger than east coordinate&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">south</span> <span class="o">&gt;</span> <span class="n">north</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;south coordinate is larger than north coordinate&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">east</span> <span class="o">-</span> <span class="n">west</span> <span class="o">&gt;</span> <span class="n">THRESHOLD</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;x dimension of the bbox is </span><span class="si">{</span><span class="n">east</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">west</span><span class="si">}</span><span class="s2"> meters, larger than threshold&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">north</span> <span class="o">-</span> <span class="n">south</span> <span class="o">&gt;</span> <span class="n">THRESHOLD</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;y dimension of the bbox is </span><span class="si">{</span><span class="n">north</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">south</span><span class="si">}</span><span class="s2"> meters, larger than threshold&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">wfs_query_params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="s2">&quot;WFS&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;2.0.0&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="s2">&quot;GetFeature&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;typeName&quot;</span><span class="p">:</span> <span class="n">feature</span><span class="p">,</span>
+        <span class="s2">&quot;srsname&quot;</span><span class="p">:</span> <span class="s2">&quot;EPSG:28992&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;outputFormat&quot;</span><span class="p">:</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bbox&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">west</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">south</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">east</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">north</span><span class="p">),</span>
+        <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">pagesize</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="n">BAG_WFS_URL</span><span class="p">,</span>
+        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span>
+        <span class="n">params</span><span class="o">=</span><span class="n">wfs_query_params</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()),</span> <span class="n">driver</span><span class="o">=</span><span class="s2">&quot;GeoJSON&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span>
+        <span class="s2">&quot;EPSG:28992&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># add default values</span>
+    <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="c1"># sbr-A</span>
+    <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">category</span>
+    <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;structuralCondition&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">structural_condition</span>
+    <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;vibrationSensitive&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vibration_sensitive</span>
+    <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;thickness&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">thickness</span>
+    <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;monumental&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">monumental</span>
+
+    <span class="c1"># prepal</span>
+    <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;buildingDepth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gdf</span><span class="o">.</span><span class="n">area</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">)</span>
+    <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;buildingDepthVibrationSensitive&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="c1"># cur166</span>
+    <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;foundationElement&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">foundation_element</span>
+    <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;material&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">material_floor</span>
+
+    <span class="k">return</span> <span class="n">gdf</span></div>
+
+
+<div class="viewcode-block" id="create_prepal_payload"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.input.vibration_properties.create_prepal_payload">[docs]</a><span class="k">def</span> <span class="nf">create_prepal_payload</span><span class="p">(</span>
+    <span class="n">buildings</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">location</span><span class="p">:</span> <span class="n">Polygon</span> <span class="o">|</span> <span class="n">LineString</span> <span class="o">|</span> <span class="n">Point</span><span class="p">,</span>
+    <span class="n">pile_shape</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;square&quot;</span><span class="p">,</span> <span class="s2">&quot;round&quot;</span><span class="p">],</span>
+    <span class="n">pile_size</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">cone_resistance</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">reduction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">unit_weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="n">elastic_modulus_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
+    <span class="n">poisson_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">20.0</span><span class="p">,</span>
+    <span class="n">vibration_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+        <span class="s2">&quot;short-term&quot;</span><span class="p">,</span> <span class="s2">&quot;repeated-short-term&quot;</span><span class="p">,</span> <span class="s2">&quot;continuous&quot;</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;continuous&quot;</span><span class="p">,</span>
+    <span class="n">frequency_vibration_sensitive</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">40.0</span><span class="p">,</span>
+    <span class="n">measurement_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;indicative&quot;</span><span class="p">,</span> <span class="s2">&quot;limited&quot;</span><span class="p">,</span> <span class="s2">&quot;extensive&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;extensive&quot;</span><span class="p">,</span>
+    <span class="n">hysteretic_damping_barkan</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.05</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create payload for VibraCore call `cur166/validation/multi`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    buildings</span>
+<span class="sd">        GeoDataFrame that holds teh building information. Must have the following columns:</span>
+<span class="sd">            - buildingDepth:</span>
+<span class="sd">              The minimum building depth [m]</span>
+<span class="sd">            - buildingDepthVibrationSensitive:</span>
+<span class="sd">              The minimum building depth [m]</span>
+<span class="sd">            - category</span>
+<span class="sd">              Based on the SBR A table 10.1.</span>
+<span class="sd">            - monumental</span>
+<span class="sd">              Has the building structure a monumental status. Based on the SBR A table 10.3.</span>
+<span class="sd">            - structuralCondition</span>
+<span class="sd">              Based on the SBR A table 10.2.</span>
+<span class="sd">            - thickness</span>
+<span class="sd">              Layer thickness settlement-sensitive layer [m]</span>
+<span class="sd">            - vibrationSensitive</span>
+<span class="sd">              Has the building structure a vibration sensitive foundation. Based on the SBR A chapter 10.2.5.</span>
+<span class="sd">    location:</span>
+<span class="sd">        Location of the source</span>
+<span class="sd">    poisson_ratio:</span>
+<span class="sd">        Poisson’s ratio of the soil [-]</span>
+<span class="sd">    elastic_modulus_factor:</span>
+<span class="sd">        Elastic modulus factor of the soil [-].</span>
+<span class="sd">    unit_weight:</span>
+<span class="sd">        Volume weight of the soil [kN/m^3]</span>
+<span class="sd">    cone_resistance:</span>
+<span class="sd">        Cone resistance [MPa]</span>
+<span class="sd">    reduction:</span>
+<span class="sd">        Reduction of the cone resistance [%]</span>
+<span class="sd">    pile_size:</span>
+<span class="sd">        Size of the pile [m]</span>
+<span class="sd">    pile_shape:</span>
+<span class="sd">        Shape of the pile.</span>
+<span class="sd">    frequency:</span>
+<span class="sd">        The dominate frequency [Hz]</span>
+<span class="sd">    vibration_type</span>
+<span class="sd">        Based on the SBR A table 10.4.</span>
+<span class="sd">    frequency_vibration_sensitive</span>
+<span class="sd">        The dominate frequency for vibration sensitive building [Hz].</span>
+<span class="sd">    measurement_type</span>
+<span class="sd">        Type of measurement based on the SBR A table 9.2.</span>
+<span class="sd">    hysteretic_damping_barkan:</span>
+<span class="sd">        hysteretic damping barkan [m^-1]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    payload: dict</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    -------</span>
+<span class="sd">    KeyError:</span>
+<span class="sd">        Missing column names in GeoDataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;category&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;structuralCondition&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;vibrationSensitive&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;thickness&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;buildingDepth&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">buildings</span><span class="o">.</span><span class="n">columns</span><span class="p">)):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Column names:</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">buildings</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span><span class="si">}</span><span class="s2"> must be in GeoDataFrame. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Found column names: </span><span class="si">{</span><span class="n">buildings</span><span class="o">.</span><span class="n">columns</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;buildingInformation&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">mapping</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">geometry</span><span class="p">),</span>
+                <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ID&quot;</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">())},</span>
+                <span class="s2">&quot;properties_PrePal&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;buildingDepth&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;buildingDepth&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;buildingDepthVibrationSensitive&quot;</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                        <span class="s2">&quot;buildingDepthVibrationSensitive&quot;</span><span class="p">,</span> <span class="mi">1</span>
+                    <span class="p">),</span>
+                    <span class="s2">&quot;calculationHeight&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;properties_SBRa&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="n">frequency</span><span class="p">,</span>
+                    <span class="s2">&quot;frequencyVibrationSensitive&quot;</span><span class="p">:</span> <span class="n">frequency_vibration_sensitive</span><span class="p">,</span>
+                    <span class="s2">&quot;monumental&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;monumental&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;structuralCondition&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;structuralCondition&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;thickness&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;thickness&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;vibrationSensitive&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;vibrationSensitive&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;vibrationType&quot;</span><span class="p">:</span> <span class="n">vibration_type</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">buildings</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;vibrationSource&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;shape&quot;</span><span class="p">:</span> <span class="n">pile_shape</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">pile_size</span><span class="p">},</span>
+        <span class="s2">&quot;soilProperties&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;coneResistance&quot;</span><span class="p">:</span> <span class="n">cone_resistance</span> <span class="o">*</span> <span class="p">(</span><span class="mi">100</span> <span class="o">-</span> <span class="n">reduction</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="s2">&quot;elasticModulus&quot;</span><span class="p">:</span> <span class="n">cone_resistance</span> <span class="o">*</span> <span class="n">elastic_modulus_factor</span><span class="p">,</span>
+            <span class="s2">&quot;poissonRatio&quot;</span><span class="p">:</span> <span class="n">poisson_ratio</span><span class="p">,</span>
+            <span class="s2">&quot;unitWeight&quot;</span><span class="p">:</span> <span class="n">unit_weight</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;prediction&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;hystereticDampingBarkan&quot;</span><span class="p">:</span> <span class="n">hysteretic_damping_barkan</span><span class="p">,</span>
+            <span class="s2">&quot;measurementType&quot;</span><span class="p">:</span> <span class="n">measurement_type</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;validation&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;sourceLocation&quot;</span><span class="p">:</span> <span class="n">mapping</span><span class="p">(</span><span class="n">location</span><span class="p">)},</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">payload</span></div>
+
+
+<div class="viewcode-block" id="create_cur166_payload"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.input.vibration_properties.create_cur166_payload">[docs]</a><span class="k">def</span> <span class="nf">create_cur166_payload</span><span class="p">(</span>
+    <span class="n">buildings</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">location</span><span class="p">:</span> <span class="n">Polygon</span> <span class="o">|</span> <span class="n">LineString</span> <span class="o">|</span> <span class="n">Point</span><span class="p">,</span>
+    <span class="n">force</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">reduction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">installation_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;vibrate&quot;</span><span class="p">,</span> <span class="s2">&quot;driving&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;vibrate&quot;</span><span class="p">,</span>
+    <span class="n">building_part</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;floor&quot;</span><span class="p">,</span> <span class="s2">&quot;wall&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;floor&quot;</span><span class="p">,</span>
+    <span class="n">safety_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">vibration_direction</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;vertical&quot;</span><span class="p">,</span> <span class="s2">&quot;horizontal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;vertical&quot;</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
+    <span class="n">vibration_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+        <span class="s2">&quot;short-term&quot;</span><span class="p">,</span> <span class="s2">&quot;repeated-short-term&quot;</span><span class="p">,</span> <span class="s2">&quot;continuous&quot;</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;continuous&quot;</span><span class="p">,</span>
+    <span class="n">frequency_vibration_sensitive</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">40.0</span><span class="p">,</span>
+    <span class="n">reference_location</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+        <span class="s2">&quot;Amsterdam&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Maasvlakte&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Rotterdam&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Groningen&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Den Haag&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Tiel&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Eindhoven&quot;</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Amsterdam&quot;</span><span class="p">,</span>
+    <span class="n">measurement_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;indicative&quot;</span><span class="p">,</span> <span class="s2">&quot;limited&quot;</span><span class="p">,</span> <span class="s2">&quot;extensive&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;extensive&quot;</span><span class="p">,</span>
+    <span class="n">methode_safety_factor</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;CUR&quot;</span><span class="p">,</span> <span class="s2">&quot;exact&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;exact&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create payload for VibraCore call `cur166/validation/multi`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    buildings</span>
+<span class="sd">        GeoDataFrame that holds teh building information. Must have the following columns:</span>
+<span class="sd">            - foundationElement</span>
+<span class="sd">              Based on CUR 166 3rd edition table 5.19</span>
+<span class="sd">            - material</span>
+<span class="sd">              Based on CUR 166 3rd edition table 5.20</span>
+<span class="sd">            - category</span>
+<span class="sd">              Based on the SBR A table 10.1.</span>
+<span class="sd">            - monumental</span>
+<span class="sd">              Has the building structure a monumental status. Based on the SBR A table 10.3.</span>
+<span class="sd">            - structuralCondition</span>
+<span class="sd">              Based on the SBR A table 10.2.</span>
+<span class="sd">            - thickness</span>
+<span class="sd">              Layer thickness settlement-sensitive layer [m]</span>
+<span class="sd">            - vibrationSensitive</span>
+<span class="sd">              Has the building structure a vibration sensitive foundation. Based on the SBR A chapter 10.2.5.</span>
+<span class="sd">    location:</span>
+<span class="sd">        Location of the source</span>
+<span class="sd">    force:</span>
+<span class="sd">        Impact force of the pile [kN]</span>
+<span class="sd">    reduction:</span>
+<span class="sd">        Reduction of impact [%]</span>
+<span class="sd">    installation_type</span>
+<span class="sd">        Based on CUR 166 3rd edition table 5.20 or 5.21</span>
+<span class="sd">    building_part</span>
+<span class="sd">        Based on CUR 166 3rd edition table 5.20 or 5.21</span>
+<span class="sd">    safety_factor</span>
+<span class="sd">        Based on CUR 166 3rd edition table 5.22</span>
+<span class="sd">    vibration_direction</span>
+<span class="sd">        Based on CUR 166 3rd edition table 5.22</span>
+<span class="sd">    frequency:</span>
+<span class="sd">        The dominate frequency [Hz]</span>
+<span class="sd">    vibration_type</span>
+<span class="sd">        Based on the SBR A table 10.4.</span>
+<span class="sd">    frequency_vibration_sensitive</span>
+<span class="sd">        The dominate frequency for vibration sensitive building [Hz].</span>
+<span class="sd">        If not provided the frequency of 20 Hz is used for PrePal and 40</span>
+<span class="sd">        for CUR 166 3rd edition high frequency vibration calculation.</span>
+<span class="sd">    reference_location</span>
+<span class="sd">        Based on CUR 166-1997 table 5.16 and 5.17</span>
+<span class="sd">    measurement_type</span>
+<span class="sd">        Type of measurement based on the SBR A table 9.2.</span>
+<span class="sd">    methode_safety_factor</span>
+<span class="sd">        Parameter that indicated how the safety factor is calculated.</span>
+<span class="sd">        Find more info about the exact method here -&gt; https://issuu.com/uitgeverijeducom/docs/geo_okt2014_totaal_v4_klein/36</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    payload: dict</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    -------</span>
+<span class="sd">    ValueError:</span>
+<span class="sd">        No reference values found for reference location</span>
+<span class="sd">    KeyError:</span>
+<span class="sd">        Missing column names in GeoDataFrame</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">reference</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">item</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">SOIL_REFERENCE</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">reference_location</span>
+            <span class="ow">and</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">installation_type</span>
+            <span class="ow">and</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;vibration_direction&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">vibration_direction</span>
+        <span class="p">),</span>
+        <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">reference</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;No reference values found for reference location: </span><span class="si">{</span><span class="n">reference_location</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;with installation type: </span><span class="si">{</span><span class="n">installation_type</span><span class="si">}</span><span class="s2"> and vibration direction: </span><span class="si">{</span><span class="n">vibration_direction</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;foundationElement&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;material&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;category&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;monumental&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;structuralCondition&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;thickness&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;vibrationSensitive&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">buildings</span><span class="o">.</span><span class="n">columns</span><span class="p">)):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Column names:</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">buildings</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span><span class="si">}</span><span class="s2"> must be in GeoDataFrame. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Found column names: </span><span class="si">{</span><span class="n">buildings</span><span class="o">.</span><span class="n">columns</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;buildingInformation&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;geometry&quot;</span><span class="p">:</span> <span class="n">mapping</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">geometry</span><span class="p">),</span>
+                <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ID&quot;</span><span class="p">:</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">())},</span>
+                <span class="s2">&quot;properties_CUR&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;buildingPart&quot;</span><span class="p">:</span> <span class="n">building_part</span><span class="p">,</span>
+                    <span class="s2">&quot;foundationElement&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;foundationElement&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;installationType&quot;</span><span class="p">:</span> <span class="n">installation_type</span><span class="p">,</span>
+                    <span class="s2">&quot;material&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;material&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;safetyFactor&quot;</span><span class="p">:</span> <span class="n">safety_factor</span><span class="p">,</span>
+                    <span class="s2">&quot;vibrationDirection&quot;</span><span class="p">:</span> <span class="n">vibration_direction</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;properties_SBRa&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;frequency&quot;</span><span class="p">:</span> <span class="n">frequency</span><span class="p">,</span>
+                    <span class="s2">&quot;frequencyVibrationSensitive&quot;</span><span class="p">:</span> <span class="n">frequency_vibration_sensitive</span><span class="p">,</span>
+                    <span class="s2">&quot;monumental&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;monumental&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;structuralCondition&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;structuralCondition&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;thickness&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;thickness&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;vibrationSensitive&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;vibrationSensitive&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;vibrationType&quot;</span><span class="p">:</span> <span class="n">vibration_type</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">}</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">buildings</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;prediction&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;hystereticDampingBarkan&quot;</span><span class="p">:</span> <span class="n">reference</span><span class="p">[</span><span class="s2">&quot;Uo&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="n">force</span> <span class="o">*</span> <span class="p">(</span><span class="mi">100</span> <span class="o">-</span> <span class="n">reduction</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
+            <span class="s2">&quot;measurementType&quot;</span><span class="p">:</span> <span class="n">measurement_type</span><span class="p">,</span>
+            <span class="s2">&quot;methodeSafetyFactor&quot;</span><span class="p">:</span> <span class="n">methode_safety_factor</span><span class="p">,</span>
+            <span class="s2">&quot;referencesVelocity&quot;</span><span class="p">:</span> <span class="n">reference</span><span class="p">[</span><span class="s2">&quot;Vo&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;variationCoefficient&quot;</span><span class="p">:</span> <span class="n">reference</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;validation&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;sourceLocation&quot;</span><span class="p">:</span> <span class="n">mapping</span><span class="p">(</span><span class="n">location</span><span class="p">)},</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">payload</span></div>
+
+
+<div class="viewcode-block" id="get_normative_building"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.input.vibration_properties.get_normative_building">[docs]</a><span class="k">def</span> <span class="nf">get_normative_building</span><span class="p">(</span>
+    <span class="n">buildings</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
+    <span class="n">location</span><span class="p">:</span> <span class="n">Polygon</span> <span class="o">|</span> <span class="n">LineString</span> <span class="o">|</span> <span class="n">Point</span><span class="p">,</span>
+    <span class="n">category</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="s2">&quot;two&quot;</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the name of the closest building</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    buildings:</span>
+<span class="sd">        GeoDataFrame that holds the building information</span>
+<span class="sd">    location:</span>
+<span class="sd">        Geometry of the source location</span>
+<span class="sd">    category:</span>
+<span class="sd">        building category based on the SBR A table 10.1.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    name: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gdf</span> <span class="o">=</span> <span class="n">buildings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">buildings</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">category</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">gdf</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ValueError: No buildings with category </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gdf</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;distance&quot;</span><span class="p">,</span> <span class="n">na_position</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_single_payload"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.input.vibration_properties.create_single_payload">[docs]</a><span class="k">def</span> <span class="nf">create_single_payload</span><span class="p">(</span>
+    <span class="n">multi_vibration_payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create payload for VibraCore call `cur166/validation/single` or `prepal/validation/single`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    multi_vibration_payload:</span>
+<span class="sd">        result from `create_cur166_payload` or `create_prepal_payload`</span>
+<span class="sd">    name:</span>
+<span class="sd">        building name</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    payload: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">multi_vibration_payload</span><span class="p">)</span>
+
+    <span class="n">props</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">item</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;buildingInformation&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">][</span><span class="s2">&quot;ID&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span>
+        <span class="p">),</span>
+        <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">props</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not a valid building name.&quot;</span><span class="p">)</span>
+    <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">buildingInformation</span><span class="o">=</span><span class="n">props</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">payload</span></div>
+
+
+<div class="viewcode-block" id="create_vibration_report_payload"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.input.vibration_properties.create_vibration_report_payload">[docs]</a><span class="k">def</span> <span class="nf">create_vibration_report_payload</span><span class="p">(</span>
+    <span class="n">multi_vibration_payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">author</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a dictionary with the payload content for the VibraCore endpoint</span>
+<span class="sd">    &quot;/cur166/report&quot; or &quot;/prepal/report&quot;</span>
+
+<span class="sd">    This dictionary can be passed directly to `nuclei.client.call_endpoint()`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vibration_payload:</span>
+<span class="sd">        The result of a call to `create_cur166_payload()` or `create_prepal_payload()`</span>
+<span class="sd">    project_name:</span>
+<span class="sd">        The name of the project.</span>
+<span class="sd">    project_id:</span>
+<span class="sd">        The identifier (code) of the project.</span>
+<span class="sd">    author:</span>
+<span class="sd">        The author of the report.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    payload: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">multi_vibration_payload</span><span class="p">)</span>
+    <span class="n">payload</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+        <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">reportProperties</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">author</span><span class="o">=</span><span class="n">author</span><span class="p">,</span>
+                <span class="n">projectNumber</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+                <span class="n">projectName</span><span class="o">=</span><span class="n">project_name</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">payload</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, CEMS BV.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
