@@ -211,7 +211,7 @@ pure-eval==0.2.2
     # via stack-data
 pyarrow==14.0.1
     # via polars
-pycodestyle==2.10.0
+pycodestyle==2.11.1
     # via
     #   flake8
     #   py-vibracore (pyproject.toml)
