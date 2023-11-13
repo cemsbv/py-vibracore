@@ -64,15 +64,17 @@ class VibrationResults:
         settings:
             Plot settings used in plot: default settings are:
 
-            {
-                "source_location": {"label": "Trillingsbron", "color": "black"},
-                "insufficient_cat1": {
-                    "label": "Voldoet Niet - Cat.1",
-                    "color": "orange",
-                },
-                "insufficient_cat2": {"label": "Voldoet Niet - Cat.2", "color": "red"},
-                "sufficient": {"label": "Voldoet", "color": "green"},
-            }
+            .. code-block:: python
+
+                {
+                    "source_location": {"label": "Trillingsbron", "color": "black"},
+                    "insufficient_cat1": {
+                        "label": "Voldoet Niet - Cat.1",
+                        "color": "orange",
+                    },
+                    "insufficient_cat2": {"label": "Voldoet Niet - Cat.2", "color": "red"},
+                    "sufficient": {"label": "Voldoet", "color": "green"},
+                }
         **kwargs:
             All additional keyword arguments are passed to the `pyplot.subplots()` call.
 
@@ -187,19 +189,22 @@ def map_payload(
     settings:
         Plot settings used in plot: default settings are:
 
-        {
-            "source_location": {"label": "Trillingsbron", "color": "black"},
-            "sensitive_cat1": {
-                "label": "Monumentaal/ gevoelig - Cat.1",
-                "color": "blue",
-            },
-            "sensitive_cat2": {
-                "label": "Monumentaal/ gevoelig - Cat.2",
-                "color": "cyan",
-            },
-            "normal_cat1": {"label": "Normaal - Cat.1", "color": "orange"},
-            "normal_cat2": {"label": "Normaal - Cat.2", "color": "olive"},
-        }
+        .. code-block:: python
+
+            {
+                "source_location": {"label": "Trillingsbron", "color": "black"},
+                "sensitive_cat1": {
+                    "label": "Monumentaal/ gevoelig - Cat.1",
+                    "color": "blue",
+                },
+                "sensitive_cat2": {
+                    "label": "Monumentaal/ gevoelig - Cat.2",
+                    "color": "cyan",
+                },
+                "normal_cat1": {"label": "Normaal - Cat.1", "color": "orange"},
+                "normal_cat2": {"label": "Normaal - Cat.2", "color": "olive"},
+            }
+
     **kwargs:
         All additional keyword arguments are passed to the `pyplot.subplots()` call.
 

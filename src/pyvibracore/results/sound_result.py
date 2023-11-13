@@ -65,36 +65,38 @@ def map_sound(
     settings:
         Plot settings used in plot: default settings are:
 
-        {
-            "source_location": {"label": "Trillingsbron", "color": "blue"},
-            "levels": [
-                {
-                    "label": ">80 db [0 dagen]",
-                    "level": 80,
-                    "color": "darkred",
-                },
-                {
-                    "label": ">75 db [5 dagen]",
-                    "level": 75,
-                    "color": "red",
-                },
-                {
-                    "label": ">70 db [15 dagen]",
-                    "level": 70,
-                    "color": "orange",
-                },
-                {
-                    "label": ">65 db [30 dagen]",
-                    "level": 65,
-                    "color": "darkgreen",
-                },
-                {
-                    "label": ">60 db [50 dagen]",
-                    "level": 60,
-                    "color": "green",
-                },
-            ],
-        }
+        .. code-block:: python
+
+            {
+                "source_location": {"label": "Trillingsbron", "color": "blue"},
+                "levels": [
+                    {
+                        "label": ">80 db [0 dagen]",
+                        "level": 80,
+                        "color": "darkred",
+                    },
+                    {
+                        "label": ">75 db [5 dagen]",
+                        "level": 75,
+                        "color": "red",
+                    },
+                    {
+                        "label": ">70 db [15 dagen]",
+                        "level": 70,
+                        "color": "orange",
+                    },
+                    {
+                        "label": ">65 db [30 dagen]",
+                        "level": 65,
+                        "color": "darkgreen",
+                    },
+                    {
+                        "label": ">60 db [50 dagen]",
+                        "level": 60,
+                        "color": "green",
+                    },
+                ],
+            }
     **kwargs:
         All additional keyword arguments are passed to the `pyplot.subplots()` call.
 

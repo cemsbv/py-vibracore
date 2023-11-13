@@ -1,4 +1,3 @@
-import geopandas as gpd
 import matplotlib.pyplot as plt
 
 from pyvibracore.input.vibration_properties import (

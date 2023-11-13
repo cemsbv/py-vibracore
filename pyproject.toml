@@ -94,7 +94,8 @@ module = [
     "pygef.*",
     "mpl_toolkits.*",
     "nuclei.*",
-    "numpy.*"
+    "numpy.*",
+    "scipy.*"
 ]
 ignore_missing_imports = true
 

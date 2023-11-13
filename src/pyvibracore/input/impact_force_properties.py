@@ -126,7 +126,7 @@ def create_multi_cpt_impact_force_payload(
                 Undrained shear strength [kPa]
     vibration_source: VibrationSource
         Vibration source object
-    friction_strategy: Literal["CPTFrictionStrategy", "SlipFrictionStrategy"],
+    friction_strategy: Literal["CPTFrictionStrategy", "SlipFrictionStrategy"]
         Defines the strategy on how to compute the sleeve friction:
 
             - CPTFrictionStrategy
@@ -134,7 +134,6 @@ def create_multi_cpt_impact_force_payload(
         The CPT Friction Strategy takes the sleeve friction provided by the cpt.
         Note that this method is only valid when the sleeve friction is provided within
         the cpt object.
-
 
             - SlipFrictionStrategy
 

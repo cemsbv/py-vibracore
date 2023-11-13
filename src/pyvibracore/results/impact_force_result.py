@@ -12,10 +12,27 @@ from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
 @dataclass(frozen=True)
 class MultiCalculationData:
+    """
+    Dataclass that holds the information from `/impact-force/multi`
+
+    Attributes
+    -----------
+    gdf: gpd.GeoDataFrame
+
+    """
+
     gdf: gpd.GeoDataFrame
 
     @classmethod
     def from_api_response(cls, response_dict: dict) -> "MultiCalculationData":
+        """
+        Stores the response of the VibraCore endpoint
+
+        Parameters
+        ----------
+        response_dict:
+           The resulting response of a call to `/impact-force/multi`
+        """
         return cls(
             gdf=gpd.read_file(json.dumps(response_dict), driver="GeoJSON"),
         )
@@ -36,12 +53,14 @@ class MultiCalculationData:
         settings:
             Plot settings used in plot: default settings are:
 
-            {
-                "hue": "max",
-                "title": "Maximale slagkracht [kN]",
-                "xlabel": "X-coördinaat",
-                "ylabel": "Y-coördinaat"
-            }
+            .. code-block:: python
+
+                {
+                    "hue": "max",
+                    "title": "Maximale slagkracht [kN]",
+                    "xlabel": "X-coördinaat",
+                    "ylabel": "Y-coördinaat"
+                }
         **kwargs:
             All additional keyword arguments are passed to the `pyplot.subplots()` call.
 
@@ -212,6 +231,7 @@ class SingleCalculationData:
     Attributes:
     ------------
     table: ImpactForceTable
+        table object
     installationLevel: float
         installation level [m w.r.t. Reference]
     maximumForce: float
