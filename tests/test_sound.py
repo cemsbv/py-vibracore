@@ -20,8 +20,6 @@ def test_map_sound(requests_mock, mock_bag_response, mock_source_location):
         period=5,
     )
 
-    plt.savefig("tpm.png")
-
     assert isinstance(fig, plt.Figure)
 
 
