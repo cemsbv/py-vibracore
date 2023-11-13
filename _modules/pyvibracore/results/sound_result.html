@@ -80,6 +80,7 @@
 <span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">patches</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span>
@@ -309,7 +310,9 @@
     <span class="k">if</span> <span class="n">gdf</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ValueError: No buildings with category </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
-    <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+    <span class="c1"># FIXME: SettingWithCopyWarning</span>
+    <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">option_context</span><span class="p">(</span><span class="s2">&quot;mode.chained_assignment&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">gdf</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;distance&quot;</span><span class="p">,</span> <span class="n">na_position</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span></div>
 </pre></div>
 
