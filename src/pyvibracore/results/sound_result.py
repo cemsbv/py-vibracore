@@ -7,6 +7,7 @@ import geopandas as gpd
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from numpy.typing import NDArray
 from scipy import interpolate
 from shapely.geometry import LineString, Point, Polygon
@@ -236,5 +237,7 @@ def get_normative_building(
     if gdf.empty:
         logging.error(f"ValueError: No buildings with category {category}.")
         return None
-    gdf["distance"] = gdf.distance(location)
+    # FIXME: SettingWithCopyWarning
+    with pd.option_context("mode.chained_assignment", None):
+        gdf["distance"] = gdf.distance(location)
     return gdf.sort_values("distance", na_position="last").iloc[0].get("name")
