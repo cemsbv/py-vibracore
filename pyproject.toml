@@ -11,7 +11,8 @@ dependencies = [
     "pygef",
     "cems-nuclei==0.4.0.b2",
     "geopandas",
-    "pyogrio"
+    "pyogrio",
+    "scipy"
 ]
 license = { file = "LICENSE" }
 readme = "README.md"
@@ -92,7 +93,8 @@ module = [
     "shapely.*",
     "pygef.*",
     "mpl_toolkits.*",
-    "nuclei.*"
+    "nuclei.*",
+    "numpy.*"
 ]
 ignore_missing_imports = true
 

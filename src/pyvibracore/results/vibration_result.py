@@ -8,39 +8,9 @@ import geopandas as gpd
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 from shapely.geometry import LineString, Point, Polygon
 
-
-def _north_arrow(axes: plt.Axes) -> None:
-    """Add north arrow to axes"""
-    x, y, arrow_length = 0.05, 0.98, 0.1
-    axes.annotate(
-        "N",
-        xy=(x, y),
-        xytext=(x, y - arrow_length),
-        arrowprops=dict(facecolor="black", width=5, headwidth=15),
-        ha="center",
-        va="center",
-        fontsize=20,
-        xycoords=axes.transAxes,
-    )
-
-
-def _scalebar(axes: plt.Axes) -> None:
-    """Add size bar to axes"""
-    scalebar = AnchoredSizeBar(
-        axes.transData,
-        20,
-        "20 m",
-        "lower left",
-        pad=1,
-        color="black",
-        frameon=True,
-        size_vertical=2,
-    )
-
-    axes.add_artist(scalebar)
+from pyvibracore.results.plot_utils import _north_arrow, _scalebar
 
 
 @dataclass(frozen=True)
@@ -219,12 +189,16 @@ def map_payload(
 
         {
             "source_location": {"label": "Trillingsbron", "color": "black"},
-            "insufficient_cat1": {
-                "label": "Voldoet Niet - Cat.1",
-                "color": "orange",
+            "sensitive_cat1": {
+                "label": "Monumentaal/ gevoelig - Cat.1",
+                "color": "blue",
             },
-            "insufficient_cat2": {"label": "Voldoet Niet - Cat.2", "color": "red"},
-            "sufficient": {"label": "Voldoet", "color": "green"},
+            "sensitive_cat2": {
+                "label": "Monumentaal/ gevoelig - Cat.2",
+                "color": "cyan",
+            },
+            "normal_cat1": {"label": "Normaal - Cat.1", "color": "orange"},
+            "normal_cat2": {"label": "Normaal - Cat.2", "color": "olive"},
         }
     **kwargs:
         All additional keyword arguments are passed to the `pyplot.subplots()` call.
