@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.1] - 2023-11-14
+
+### Bug Fixes
+
+- Update sound prediction function
+
 ## [0.0.1] - 2023-11-13
 
 ### Miscellaneous Tasks
