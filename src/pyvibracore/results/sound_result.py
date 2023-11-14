@@ -18,16 +18,28 @@ from pyvibracore.results.plot_utils import _north_arrow, _scalebar
 def _sound_prediction(
     power: float, k2: float, period: float, levels: List[float]
 ) -> NDArray:
-    distance = np.arange(1e-5, 150, step=0.2)
+    distance = np.arange(1e-5, 500, step=0.2)
     noise = (
         power
-        - (-10 * np.log(period / 12))
-        - (20 * np.log(distance) + 0.005 * distance + 9.1)
+        - (-10 * np.log10(period / 12))
+        - (20 * np.log10(distance) + 0.005 * distance + 9.1)
         + k2
     )
 
-    f = interpolate.interp1d(noise, distance, kind="cubic")
-    return f(levels)
+    # interpolate and predict
+    f = interpolate.interp1d(
+        noise, distance, kind="cubic", assume_sorted=False, fill_value="extrapolate"
+    )
+    space = f(levels)
+
+    # raise warning
+    if any([item > 500 for item in space]):
+        logging.warning(
+            "One or more distances exceeds the 500 meter mark. "
+            "Please note that this methode extrapolate the values from this point."
+        )
+
+    return space
 
 
 def map_sound(
