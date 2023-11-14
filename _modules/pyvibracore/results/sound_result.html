@@ -91,16 +91,28 @@
 <span class="k">def</span> <span class="nf">_sound_prediction</span><span class="p">(</span>
     <span class="n">power</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">k2</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">period</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">levels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">:</span>
-    <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+    <span class="n">distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">1e-5</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
     <span class="n">noise</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">power</span>
-        <span class="o">-</span> <span class="p">(</span><span class="o">-</span><span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">period</span> <span class="o">/</span> <span class="mi">12</span><span class="p">))</span>
-        <span class="o">-</span> <span class="p">(</span><span class="mi">20</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.005</span> <span class="o">*</span> <span class="n">distance</span> <span class="o">+</span> <span class="mf">9.1</span><span class="p">)</span>
+        <span class="o">-</span> <span class="p">(</span><span class="o">-</span><span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">period</span> <span class="o">/</span> <span class="mi">12</span><span class="p">))</span>
+        <span class="o">-</span> <span class="p">(</span><span class="mi">20</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.005</span> <span class="o">*</span> <span class="n">distance</span> <span class="o">+</span> <span class="mf">9.1</span><span class="p">)</span>
         <span class="o">+</span> <span class="n">k2</span>
     <span class="p">)</span>
 
-    <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">noise</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;cubic&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">levels</span><span class="p">)</span>
+    <span class="c1"># interpolate and predict</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span>
+        <span class="n">noise</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;cubic&quot;</span><span class="p">,</span> <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;extrapolate&quot;</span>
+    <span class="p">)</span>
+    <span class="n">space</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">levels</span><span class="p">)</span>
+
+    <span class="c1"># raise warning</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">item</span> <span class="o">&gt;</span> <span class="mi">500</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">space</span><span class="p">]):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;One or more distances exceeds the 500 meter mark. &quot;</span>
+            <span class="s2">&quot;Please note that this methode extrapolate the values from this point.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">space</span>
 
 
 <div class="viewcode-block" id="map_sound"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.sound_result.map_sound">[docs]</a><span class="k">def</span> <span class="nf">map_sound</span><span class="p">(</span>
