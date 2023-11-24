@@ -2,9 +2,27 @@
 Reference
 =========
 
+.. _API:
+Application programming interface (API)
+---------------------------------------
+
+.. autofunction:: pyvibracore.api.get_impact_force_report
+
+.. autofunction:: pyvibracore.api.get_impact_force_calculation
+
+.. autofunction:: pyvibracore.api.get_prepal_calculation
+
+.. autofunction:: pyvibracore.api.get_cur166_calculation
+
+.. autofunction:: pyvibracore.api.get_cur166_report
+
+.. autofunction:: pyvibracore.api.get_prepal_report
+
+
 Impact Force
 -------------
 
+.. _impactForceInput:
 Input
 ~~~~~~
 
@@ -14,7 +32,7 @@ Input
 
 .. autofunction:: pyvibracore.input.impact_force_properties.create_single_cpt_impact_force_payload
 
-
+.. _impactForceResult:
 Result
 ~~~~~~
 
@@ -38,6 +56,7 @@ Result
 SBR-A
 ------
 
+.. _SBRAInput:
 Input
 ~~~~~~
 
@@ -49,16 +68,19 @@ Input
 
 .. autofunction:: pyvibracore.input.vibration_properties.create_vibration_report_payload
 
+.. _PerPalInput:
 PerPal
 """""""
 
 .. autofunction:: pyvibracore.input.vibration_properties.create_prepal_payload
 
+.. _CUR166Input:
 CUR166
 """""""
 
 .. autofunction:: pyvibracore.input.vibration_properties.create_cur166_payload
 
+.. _SBRAResult:
 Result
 ~~~~~~
 
