@@ -24,9 +24,11 @@ black[jupyter]==23.3.0
     # via
     #   black
     #   py-vibracore (pyproject.toml)
-cems-nuclei==0.4.0b2
-    # via py-vibracore (pyproject.toml)
-certifi==2023.7.22
+cems-nuclei[client]==0.5.1
+    # via
+    #   cems-nuclei
+    #   py-vibracore (pyproject.toml)
+certifi==2023.11.17
     # via
     #   fiona
     #   pyogrio
@@ -72,7 +74,7 @@ docutils==0.18.1
     # via
     #   sphinx
     #   sphinx-rtd-theme
-exceptiongroup==1.1.3
+exceptiongroup==1.2.0
     # via pytest
 executing==2.0.1
     # via stack-data
@@ -80,7 +82,7 @@ fiona==1.9.5
     # via geopandas
 flake8==6.0.0
     # via py-vibracore (pyproject.toml)
-fonttools==4.44.0
+fonttools==4.45.1
     # via matplotlib
 gef-file-to-map==0.1.0
     # via pygef
@@ -88,7 +90,7 @@ geographiclib==2.0
     # via geopy
 geopandas==0.14.1
     # via py-vibracore (pyproject.toml)
-geopy==2.4.0
+geopy==2.4.1
     # via contextily
 idna==3.4
     # via requests
@@ -107,6 +109,7 @@ ipympl==0.9.3
 ipython==8.11.0
     # via
     #   black
+    #   cems-nuclei
     #   ipympl
     #   ipywidgets
     #   py-vibracore (pyproject.toml)
@@ -132,7 +135,7 @@ lxml==4.9.3
     # via pygef
 markupsafe==2.1.3
     # via jinja2
-matplotlib==3.8.1
+matplotlib==3.8.2
     # via
     #   contextily
     #   ipympl
@@ -154,6 +157,7 @@ mypy-extensions==1.0.0
     #   py-vibracore (pyproject.toml)
 numpy==1.26.2
     # via
+    #   cems-nuclei
     #   contourpy
     #   ipympl
     #   matplotlib
@@ -165,6 +169,8 @@ numpy==1.26.2
     #   scipy
     #   shapely
     #   snuggs
+orjson==3.9.10
+    # via cems-nuclei
 packaging==23.2
     # via
     #   black
@@ -199,11 +205,11 @@ platformdirs==3.5.1
     #   py-vibracore (pyproject.toml)
 pluggy==1.3.0
     # via pytest
-polars[pyarrow]==0.19.13
+polars[pyarrow]==0.19.15
     # via
     #   polars
     #   pygef
-prompt-toolkit==3.0.40
+prompt-toolkit==3.0.41
     # via ipython
 ptyprocess==0.7.0
     # via pexpect
@@ -221,7 +227,7 @@ pyflakes==3.0.1
     #   py-vibracore (pyproject.toml)
 pygef==0.10.0
     # via py-vibracore (pyproject.toml)
-pygments==2.16.1
+pygments==2.17.2
     # via
     #   ipython
     #   sphinx
@@ -254,7 +260,7 @@ requests==2.31.0
     #   sphinx
 requests-mock==1.11.0
     # via py-vibracore (pyproject.toml)
-scipy==1.11.3
+scipy==1.11.4
     # via py-vibracore (pyproject.toml)
 shapely==2.0.2
     # via geopandas
@@ -319,7 +325,7 @@ traitlets==5.13.0
     #   matplotlib-inline
 types-pytz==2023.3.1.1
     # via pandas-stubs
-types-tqdm==4.66.0.4
+types-tqdm==4.66.0.5
     # via py-vibracore (pyproject.toml)
 typing-extensions==4.7.1
     # via
@@ -328,9 +334,9 @@ typing-extensions==4.7.1
     #   py-vibracore (pyproject.toml)
 tzdata==2023.3
     # via pandas
-urllib3==2.0.7
+urllib3==2.1.0
     # via requests
-wcwidth==0.2.9
+wcwidth==0.2.12
     # via prompt-toolkit
 widgetsnbextension==4.0.9
     # via ipywidgets
