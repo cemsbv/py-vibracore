@@ -22,7 +22,9 @@ def wait_until_ticket_is_ready(client: NucleiClient, ticket: Response) -> None:
         status = response.json()["state"]
 
     if status == "FAILURE":
-        raise RuntimeError(f'{response.json()["msg"]}\n{response.json()["traceback"]}')
+        raise RuntimeError(
+            f'{response.json().get("msg")}\n{response.json().get("traceback")}'
+        )
 
 
 def get_impact_force_report(client: NucleiClient, payload: dict) -> bytes:
