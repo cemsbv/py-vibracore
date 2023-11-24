@@ -44,8 +44,19 @@
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Installing py-vibracore</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html#how-to-import-py-vibracore">How to import py-vibracore</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html#risk-of-damage-during-construction-sbr-a">Risk of damage during construction [SBR-A]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html#impact-force-determination-cur166">Impact force determination [CUR166]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html#guided-usage">Guided usage</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#application-programming-interface-api">Application programming interface (API)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pyvibracore.api.get_impact_force_report"><code class="docutils literal notranslate"><span class="pre">get_impact_force_report()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyvibracore.api.get_impact_force_calculation"><code class="docutils literal notranslate"><span class="pre">get_impact_force_calculation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyvibracore.api.get_prepal_calculation"><code class="docutils literal notranslate"><span class="pre">get_prepal_calculation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyvibracore.api.get_cur166_calculation"><code class="docutils literal notranslate"><span class="pre">get_cur166_calculation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyvibracore.api.get_cur166_report"><code class="docutils literal notranslate"><span class="pre">get_cur166_report()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyvibracore.api.get_prepal_report"><code class="docutils literal notranslate"><span class="pre">get_prepal_report()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#impact-force">Impact Force</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#input">Input</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pyvibracore.input.impact_force_properties.create_multi_cpt_impact_force_payload"><code class="docutils literal notranslate"><span class="pre">create_multi_cpt_impact_force_payload()</span></code></a></li>
@@ -61,7 +72,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#sbr-a">SBR-A</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">Input</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sbrainput">Input</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pyvibracore.input.vibration_properties.get_buildings_geodataframe"><code class="docutils literal notranslate"><span class="pre">get_buildings_geodataframe()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyvibracore.input.vibration_properties.get_normative_building"><code class="docutils literal notranslate"><span class="pre">get_normative_building()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyvibracore.input.vibration_properties.create_single_payload"><code class="docutils literal notranslate"><span class="pre">create_single_payload()</span></code></a></li>
@@ -70,7 +81,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#cur166">CUR166</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Result</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sbraresult">Result</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pyvibracore.results.vibration_result.VibrationResults"><code class="docutils literal notranslate"><span class="pre">VibrationResults</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyvibracore.results.vibration_result.map_payload"><code class="docutils literal notranslate"><span class="pre">map_payload()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pyvibracore.results.vibration_result.plot_reduction"><code class="docutils literal notranslate"><span class="pre">plot_reduction()</span></code></a></li>
@@ -113,10 +124,115 @@
              
   <section id="reference">
 <h1>Reference<a class="headerlink" href="#reference" title="Permalink to this heading"></a></h1>
+<section id="application-programming-interface-api">
+<span id="api"></span><h2>Application programming interface (API)<a class="headerlink" href="#application-programming-interface-api" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pyvibracore.api.get_impact_force_report">
+<span class="sig-prename descclassname"><span class="pre">pyvibracore.api.</span></span><span class="sig-name descname"><span class="pre">get_impact_force_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyvibracore/api.html#get_impact_force_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyvibracore.api.get_impact_force_report" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper around the VibraCore endpoint “/impact-force/report”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<em>NucleiClient</em>) – client object created by [nuclei](<a class="reference external" href="https://github.com/cemsbv/nuclei">https://github.com/cemsbv/nuclei</a>)</p></li>
+<li><p><strong>payload</strong> (<em>dict</em>) – the payload of the request, can be created by calling <cite>create_multi_cpt_impact_force_report_payload()</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyvibracore.api.get_impact_force_calculation">
+<span class="sig-prename descclassname"><span class="pre">pyvibracore.api.</span></span><span class="sig-name descname"><span class="pre">get_impact_force_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyvibracore/api.html#get_impact_force_calculation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyvibracore.api.get_impact_force_calculation" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper around the VibraCore endpoint “/impact-force/calculation/multi”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<em>NucleiClient</em>) – client object created by [nuclei](<a class="reference external" href="https://github.com/cemsbv/nuclei">https://github.com/cemsbv/nuclei</a>)</p></li>
+<li><p><strong>payload</strong> (<em>dict</em>) – the payload of the request, can be created by calling <cite>create_multi_cpt_impact_force_payload()</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyvibracore.api.get_prepal_calculation">
+<span class="sig-prename descclassname"><span class="pre">pyvibracore.api.</span></span><span class="sig-name descname"><span class="pre">get_prepal_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyvibracore/api.html#get_prepal_calculation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyvibracore.api.get_prepal_calculation" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper around the VibraCore endpoint “/prepal/validation/multi”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<em>NucleiClient</em>) – client object created by [nuclei](<a class="reference external" href="https://github.com/cemsbv/nuclei">https://github.com/cemsbv/nuclei</a>)</p></li>
+<li><p><strong>payload</strong> (<em>dict</em>) – the payload of the request, can be created by calling <cite>create_prepal_payload()</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyvibracore.api.get_cur166_calculation">
+<span class="sig-prename descclassname"><span class="pre">pyvibracore.api.</span></span><span class="sig-name descname"><span class="pre">get_cur166_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyvibracore/api.html#get_cur166_calculation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyvibracore.api.get_cur166_calculation" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper around the VibraCore endpoint “/cur166/validation/multi”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<em>NucleiClient</em>) – client object created by [nuclei](<a class="reference external" href="https://github.com/cemsbv/nuclei">https://github.com/cemsbv/nuclei</a>)</p></li>
+<li><p><strong>payload</strong> (<em>dict</em>) – the payload of the request, can be created by calling <cite>create_cur166_payload()</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyvibracore.api.get_cur166_report">
+<span class="sig-prename descclassname"><span class="pre">pyvibracore.api.</span></span><span class="sig-name descname"><span class="pre">get_cur166_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyvibracore/api.html#get_cur166_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyvibracore.api.get_cur166_report" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper around the VibraCore endpoint “/cur166/report”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<em>NucleiClient</em>) – client object created by [nuclei](<a class="reference external" href="https://github.com/cemsbv/nuclei">https://github.com/cemsbv/nuclei</a>)</p></li>
+<li><p><strong>payload</strong> (<em>dict</em>) – the payload of the request, can be created by calling <cite>create_vibration_report_payload()</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pyvibracore.api.get_prepal_report">
+<span class="sig-prename descclassname"><span class="pre">pyvibracore.api.</span></span><span class="sig-name descname"><span class="pre">get_prepal_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">payload</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyvibracore/api.html#get_prepal_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyvibracore.api.get_prepal_report" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper around the VibraCore endpoint “/cur166/report”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<em>NucleiClient</em>) – client object created by [nuclei](<a class="reference external" href="https://github.com/cemsbv/nuclei">https://github.com/cemsbv/nuclei</a>)</p></li>
+<li><p><strong>payload</strong> (<em>dict</em>) – the payload of the request, can be created by calling <cite>create_vibration_report_payload()</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="impact-force">
 <h2>Impact Force<a class="headerlink" href="#impact-force" title="Permalink to this heading"></a></h2>
 <section id="input">
-<h3>Input<a class="headerlink" href="#input" title="Permalink to this heading"></a></h3>
+<span id="impactforceinput"></span><h3>Input<a class="headerlink" href="#input" title="Permalink to this heading"></a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyvibracore.input.impact_force_properties.create_multi_cpt_impact_force_payload">
 <span class="sig-prename descclassname"><span class="pre">pyvibracore.input.impact_force_properties.</span></span><span class="sig-name descname"><span class="pre">create_multi_cpt_impact_force_payload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cptdata_objects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classify_tables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibration_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">friction_strategy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drive_strategy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">installation_level_offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zeta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyvibracore/input/impact_force_properties.html#create_multi_cpt_impact_force_payload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyvibracore.input.impact_force_properties.create_multi_cpt_impact_force_payload" title="Permalink to this definition"></a></dt>
@@ -278,7 +394,7 @@ values must be provided within the cpt object.</p>
 
 </section>
 <section id="result">
-<h3>Result<a class="headerlink" href="#result" title="Permalink to this heading"></a></h3>
+<span id="impactforceresult"></span><h3>Result<a class="headerlink" href="#result" title="Permalink to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="pyvibracore.results.impact_force_result.MultiCalculationData">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyvibracore.results.impact_force_result.</span></span><span class="sig-name descname"><span class="pre">MultiCalculationData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyvibracore/results/impact_force_result.html#MultiCalculationData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyvibracore.results.impact_force_result.MultiCalculationData" title="Permalink to this definition"></a></dt>
@@ -406,8 +522,8 @@ values must be provided within the cpt object.</p>
 </section>
 <section id="sbr-a">
 <h2>SBR-A<a class="headerlink" href="#sbr-a" title="Permalink to this heading"></a></h2>
-<section id="id1">
-<h3>Input<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h3>
+<section id="sbrainput">
+<span id="id1"></span><h3>Input<a class="headerlink" href="#sbrainput" title="Permalink to this heading"></a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyvibracore.input.vibration_properties.get_buildings_geodataframe">
 <span class="sig-prename descclassname"><span class="pre">pyvibracore.input.vibration_properties.</span></span><span class="sig-name descname"><span class="pre">get_buildings_geodataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">west</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">south</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">east</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">north</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'two'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monumental</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structural_condition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'normal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibration_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">foundation_element</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'shallow</span> <span class="pre">foundation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material_floor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'concrete'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bag:pand'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pagesize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1000'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyvibracore/input/vibration_properties.html#get_buildings_geodataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyvibracore.input.vibration_properties.get_buildings_geodataframe" title="Permalink to this definition"></a></dt>
@@ -506,7 +622,7 @@ item in the BAG, see https://www.nationaalgeoregister.nl/geonetwork/srv/dut/cata
 </dd></dl>
 
 <section id="perpal">
-<h4>PerPal<a class="headerlink" href="#perpal" title="Permalink to this heading"></a></h4>
+<span id="perpalinput"></span><h4>PerPal<a class="headerlink" href="#perpal" title="Permalink to this heading"></a></h4>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyvibracore.input.vibration_properties.create_prepal_payload">
 <span class="sig-prename descclassname"><span class="pre">pyvibracore.input.vibration_properties.</span></span><span class="sig-name descname"><span class="pre">create_prepal_payload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buildings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pile_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pile_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cone_resistance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elastic_modulus_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poisson_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibration_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'continuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_vibration_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'extensive'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hysteretic_damping_barkan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyvibracore/input/vibration_properties.html#create_prepal_payload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyvibracore.input.vibration_properties.create_prepal_payload" title="Permalink to this definition"></a></dt>
@@ -563,7 +679,7 @@ Has the building structure a vibration sensitive foundation. Based on the SBR A 
 
 </section>
 <section id="cur166">
-<h4>CUR166<a class="headerlink" href="#cur166" title="Permalink to this heading"></a></h4>
+<span id="cur166input"></span><h4>CUR166<a class="headerlink" href="#cur166" title="Permalink to this heading"></a></h4>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyvibracore.input.vibration_properties.create_cur166_payload">
 <span class="sig-prename descclassname"><span class="pre">pyvibracore.input.vibration_properties.</span></span><span class="sig-name descname"><span class="pre">create_cur166_payload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buildings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">installation_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'vibrate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">building_part</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'floor'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safety_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibration_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'vertical'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibration_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'continuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_vibration_sensitive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Amsterdam'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'extensive'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">methode_safety_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'exact'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyvibracore/input/vibration_properties.html#create_cur166_payload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyvibracore.input.vibration_properties.create_cur166_payload" title="Permalink to this definition"></a></dt>
@@ -626,8 +742,8 @@ Find more info about the exact method here -&gt; <a class="reference external" h
 
 </section>
 </section>
-<section id="id2">
-<h3>Result<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<section id="sbraresult">
+<span id="id2"></span><h3>Result<a class="headerlink" href="#sbraresult" title="Permalink to this heading"></a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="pyvibracore.results.vibration_result.VibrationResults">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyvibracore.results.vibration_result.</span></span><span class="sig-name descname"><span class="pre">VibrationResults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyvibracore/results/vibration_result.html#VibrationResults"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyvibracore.results.vibration_result.VibrationResults" title="Permalink to this definition"></a></dt>
