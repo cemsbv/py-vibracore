@@ -28,7 +28,7 @@ docs = [
     "sphinx-autodoc-typehints==1.22",
     "ipython==8.11.0",
     "asteroid-sphinx-theme==0.0.3",
-    "sphinx_rtd_theme==1.2.0"
+    "sphinx_rtd_theme==2.0.0"
 ]
 # lint dependencies from github super-linter v5
 # See https://github.com/super-linter/super-linter/tree/main/dependencies/python
