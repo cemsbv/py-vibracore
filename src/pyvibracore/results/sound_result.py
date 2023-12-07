@@ -18,6 +18,25 @@ from pyvibracore.results.plot_utils import _north_arrow, _scalebar
 def _sound_prediction(
     power: float, k2: float, period: float, levels: List[float]
 ) -> NDArray:
+    """
+    Based on the 'Handleiding meten en rekenen industrielawaai' 2004 methode l.
+    More information: https://open.overheid.nl/Details/ronl-15eb5528-d835-4f6a-b3a1-fc0851b334f9/1
+
+    Parameters
+    ----------
+    power:
+        source power [dB]
+    k2:
+        Correction term [dB]
+    period:
+        Operating period of the building code [hours]
+    levels: list
+        Array of floats to calculate the distance
+
+    Returns
+    -------
+    distance: NDArray
+    """
     distance = np.arange(1e-5, 500, step=0.2)
     noise = (
         power
@@ -166,7 +185,9 @@ def map_sound(
     if building.empty:
         raise ValueError(f"No buildings with name {building_name}.")
 
-    building.plot(ax=axes, zorder=2, color="gray", aspect=1)
+    building.where(buildings["name"] == building_name).plot(
+        ax=axes, zorder=2, color="gray", aspect=1
+    )
     buildings.where(buildings["name"] != building_name).plot(
         ax=axes, zorder=2, color="lightgray", aspect=1
     )
