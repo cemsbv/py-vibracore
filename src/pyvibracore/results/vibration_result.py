@@ -251,7 +251,7 @@ def map_payload(
             gdf["category"] == "one",
             ~np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
         )
-    ).plot(ax=axes, zorder=2, color=settings["sensitive_cat1"]["color"], aspect=1)
+    ).plot(ax=axes, zorder=2, color=settings["normal_cat1"]["color"], aspect=1)
     gdf.where(
         np.logical_and(
             gdf["category"] == "two",
