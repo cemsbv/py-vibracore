@@ -16,7 +16,7 @@ attrs==23.1.0
     # via
     #   fiona
     #   rasterio
-babel==2.13.1
+babel==2.14.0
     # via sphinx
 backcall==0.2.0
     # via ipython
@@ -24,7 +24,7 @@ black[jupyter]==23.3.0
     # via
     #   black
     #   py-vibracore (pyproject.toml)
-cems-nuclei[client]==0.5.1
+cems-nuclei[client]==0.5.3
     # via
     #   cems-nuclei
     #   py-vibracore (pyproject.toml)
@@ -82,7 +82,7 @@ fiona==1.9.5
     # via geopandas
 flake8==6.0.0
     # via py-vibracore (pyproject.toml)
-fonttools==4.45.1
+fonttools==4.47.0
     # via matplotlib
 gef-file-to-map==0.1.0
     # via pygef
@@ -92,11 +92,11 @@ geopandas==0.14.1
     # via py-vibracore (pyproject.toml)
 geopy==2.4.1
     # via contextily
-idna==3.4
+idna==3.6
     # via requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==6.8.0
+importlib-metadata==7.0.0
     # via
     #   fiona
     #   sphinx
@@ -131,7 +131,7 @@ jupyterlab-widgets==3.0.9
     # via ipywidgets
 kiwisolver==1.4.5
     # via matplotlib
-lxml==4.9.3
+lxml==4.9.4
     # via pygef
 markupsafe==2.1.3
     # via jinja2
@@ -180,9 +180,9 @@ packaging==23.2
     #   pyogrio
     #   pytest
     #   sphinx
-pandas==2.1.3
+pandas==2.1.4
     # via geopandas
-pandas-stubs==2.1.1.230928
+pandas-stubs==2.1.4.231218
     # via py-vibracore (pyproject.toml)
 parso==0.8.3
     # via jedi
@@ -190,7 +190,7 @@ pathspec==0.11.1
     # via
     #   black
     #   py-vibracore (pyproject.toml)
-pexpect==4.8.0
+pexpect==4.9.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
@@ -205,17 +205,17 @@ platformdirs==3.5.1
     #   py-vibracore (pyproject.toml)
 pluggy==1.3.0
     # via pytest
-polars[pyarrow]==0.19.15
+polars[pyarrow]==0.19.19
     # via
     #   polars
     #   pygef
-prompt-toolkit==3.0.41
+prompt-toolkit==3.0.43
     # via ipython
 ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.2
     # via stack-data
-pyarrow==14.0.1
+pyarrow==14.0.2
     # via polars
 pycodestyle==2.10.0
     # via
@@ -316,7 +316,7 @@ tomli==2.0.1
     #   pytest
 tqdm[notebook]==4.66.1
     # via py-vibracore (pyproject.toml)
-traitlets==5.13.0
+traitlets==5.14.0
     # via
     #   comm
     #   ipympl
