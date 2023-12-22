@@ -404,6 +404,11 @@ def plot_reduction(
     axes.set_ylabel("Vibration velocity [mm/s]")
     axes.set_xlim(0, 50)
     axes.set_ylim(0, 30)
-    axes.legend("best")
+    axes.legend(
+        title=f"Vibration prediction: {response_dict.get('ID')}",
+        title_fontsize=12,
+        fontsize=9,
+        loc="upper right",
+    )
 
     return fig
