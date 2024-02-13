@@ -418,12 +418,12 @@ def create_cur166_payload(
             for _, row in buildings.iterrows()
         ],
         "prediction": {
-            "hystereticDampingBarkan": reference["Uo"],
+            "hystereticDampingBarkan": reference["alpha"],
             "force": force * (100 - reduction) / 100,
             "measurementType": measurement_type,
             "methodeSafetyFactor": methode_safety_factor,
-            "referencesVelocity": reference["Vo"],
-            "variationCoefficient": reference["alpha"],
+            "referencesVelocity": reference["Uo"],
+            "variationCoefficient": reference["Vo"],
         },
         "validation": {"sourceLocation": mapping(location)},
     }
