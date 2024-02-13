@@ -493,12 +493,12 @@
             <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">buildings</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
         <span class="p">],</span>
         <span class="s2">&quot;prediction&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;hystereticDampingBarkan&quot;</span><span class="p">:</span> <span class="n">reference</span><span class="p">[</span><span class="s2">&quot;Uo&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;hystereticDampingBarkan&quot;</span><span class="p">:</span> <span class="n">reference</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
             <span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="n">force</span> <span class="o">*</span> <span class="p">(</span><span class="mi">100</span> <span class="o">-</span> <span class="n">reduction</span><span class="p">)</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
             <span class="s2">&quot;measurementType&quot;</span><span class="p">:</span> <span class="n">measurement_type</span><span class="p">,</span>
             <span class="s2">&quot;methodeSafetyFactor&quot;</span><span class="p">:</span> <span class="n">methode_safety_factor</span><span class="p">,</span>
-            <span class="s2">&quot;referencesVelocity&quot;</span><span class="p">:</span> <span class="n">reference</span><span class="p">[</span><span class="s2">&quot;Vo&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;variationCoefficient&quot;</span><span class="p">:</span> <span class="n">reference</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;referencesVelocity&quot;</span><span class="p">:</span> <span class="n">reference</span><span class="p">[</span><span class="s2">&quot;Uo&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;variationCoefficient&quot;</span><span class="p">:</span> <span class="n">reference</span><span class="p">[</span><span class="s2">&quot;Vo&quot;</span><span class="p">],</span>
         <span class="p">},</span>
         <span class="s2">&quot;validation&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;sourceLocation&quot;</span><span class="p">:</span> <span class="n">mapping</span><span class="p">(</span><span class="n">location</span><span class="p">)},</span>
     <span class="p">}</span>
