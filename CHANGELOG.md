@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2024-02-13
+
+### Bug Fixes
+
+- *(constants)* Update SOIL REFERENCE properties
+- *(plot)* Update legend of vibration prediction reduction plot
+
+### Documentation
+
+- Update comments in notebook
+
+### Styling
+
+- Format markdown and bash file
+
 ## [0.1.2] - 2023-12-21
 
 ### Bug Fixes
@@ -10,15 +25,15 @@ All notable changes to this project will be documented in this file.
 - *(notebook)* Add arguments to call endpoint method
 - Use get methode to obtain data
 
-### Refactor
-
-- Move measurement_type parameter
-- Move measurement_type and methode_safety_factor
-
 ### Documentation
 
 - Add docstring sound calculation
 - Add function reference and user guide
+
+### Refactor
+
+- Move measurement_type parameter
+- Move measurement_type and methode_safety_factor
 
 ## [0.1.1] - 2023-11-14
 
@@ -28,14 +43,6 @@ All notable changes to this project will be documented in this file.
 
 ## [0.0.1] - 2023-11-13
 
-### Miscellaneous Tasks
-
-- Update gitignore
-- Remove fig save
-- Silence SettingWithCopyWarning
-- *(notebook)* Update notebook
-- Init commit py-vibracore
-
 ### Documentation
 
 - Add reference to docs
@@ -43,6 +50,14 @@ All notable changes to this project will be documented in this file.
 ### Features
 
 - *(sound)* Add sound prediction
+
+### Miscellaneous Tasks
+
+- Update gitignore
+- Remove fig save
+- Silence SettingWithCopyWarning
+- *(notebook)* Update notebook
+- Init commit py-vibracore
 
 ### Styling
 
