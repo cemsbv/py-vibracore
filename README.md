@@ -1,12 +1,14 @@
 # py-vibracore
+
 Public python SDK for the CEMS VibraCore web-API
 
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
-
-This repository is created by [CEMS BV](https://cemsbv.nl/) and is a public python wrapper around the CEMS [VibraCore web-API](https://nuclei.cemsbv.io/#/vibracore/api).
+This repository is created by [CEMS BV](https://cemsbv.nl/) and is a public
+python wrapper around the CEMS
+[VibraCore web-API](https://nuclei.cemsbv.io/#/vibracore/api).
 
 # Installation
 
@@ -14,26 +16,29 @@ To install a package in this repository run:
 
 `$ pip install py-vibracore`
 
-
 ## ENV VARS
 
-To use `py-vibracore` add the follow ENV vars to your environment. Or provide them when asked.
+To use `py-vibracore` add the follow ENV vars to your environment. Or provide
+them when asked.
 
 ```
 * NUCLEI_TOKEN
     - Your NUCLEI user token
 ```
 
-You can obtain your `NUCLEI_TOKEN` on [NUCLEI](https://nuclei.cemsbv.io/#/). 
-Go to `personal-access-tokens` and create a new user token.
+You can obtain your `NUCLEI_TOKEN` on [NUCLEI](https://nuclei.cemsbv.io/#/). Go
+to `personal-access-tokens` and create a new user token.
 
 # Contribution
 
 ## Environment
 
-We recommend developing in Python3.9 with a clean virtual environment (using `virtualenv` or `conda`), installing the requirements from the requirements.txt file:
+We recommend developing in Python3.9 with a clean virtual environment (using
+`virtualenv` or `conda`), installing the requirements from the requirements.txt
+file:
 
-Example using `virtualenv` and `pip` to install the dependencies in a new environment .env on Linux:
+Example using `virtualenv` and `pip` to install the dependencies in a new
+environment .env on Linux:
 
 ```bash
 python -m venv .env
@@ -68,7 +73,8 @@ isort --settings-path "pyproject.toml" src/pyvibracore tests notebooks
 
 To maintain code quality we use the GitHub super-linter.
 
-To run the linters locally, run the `run_super_linters.sh` bash script from the root directory.
+To run the linters locally, run the `run_super_linters.sh` bash script from the
+root directory.
 
 ## UnitTest
 
