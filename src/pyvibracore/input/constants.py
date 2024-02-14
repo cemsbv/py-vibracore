@@ -134,7 +134,7 @@ SOIL_REFERENCE = [
         "vibration_direction": "horizontal",
         "Uo": 2.6,
         "alpha": 0.02,
-        "Vo": 1.8,
+        "Vo": 0.8,
     },
     {
         "location": "Rotterdam",
