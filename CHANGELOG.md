@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.4] - 2024-02-14
+
+### Bug Fixes
+
+- *(constants)* Update SOIL REFERENCE properties
+- *(ci)* Use PyPi tokenless authentication
+
 ## [0.1.3] - 2024-02-13
 
 ### Bug Fixes
