@@ -73,7 +73,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pyvibracore.input.impact_force_properties</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span>
 
@@ -163,6 +165,7 @@
     <span class="n">friction_strategy</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;CPTFrictionStrategy&quot;</span><span class="p">,</span> <span class="s2">&quot;SlipFrictionStrategy&quot;</span><span class="p">],</span>
     <span class="n">drive_strategy</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;vibrate&quot;</span><span class="p">,</span> <span class="s2">&quot;push&quot;</span><span class="p">],</span>
     <span class="n">installation_level_offset</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">groundwater_level_offset</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">zeta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -227,6 +230,9 @@
 <span class="sd">        The push strategy calculates the impact force based on a push installation method.</span>
 <span class="sd">    installation_level_offset: float</span>
 <span class="sd">        Installation level of the sheet pile [m w.r.t REF]</span>
+<span class="sd">    groundwater_level_offset: float, optional</span>
+<span class="sd">        Groundwater level for all cpts. if None groundwater level of cpt is used. if no</span>
+<span class="sd">        groundwater level is set in the cpt we will take one meter below surface level [m w.r.t REF]</span>
 <span class="sd">    zeta: float = 0.6</span>
 <span class="sd">        verknedingsfactor [-], used in the push drive strategy based on CUR 166 6th edition.</span>
 
@@ -252,9 +258,9 @@
                     <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">cpt</span><span class="o">.</span><span class="n">delivered_location</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
                 <span class="p">},</span>
                 <span class="s2">&quot;customInterval&quot;</span><span class="p">:</span> <span class="n">CustomInterval</span><span class="p">,</span>
-                <span class="s2">&quot;groundwaterLevelOffset&quot;</span><span class="p">:</span> <span class="n">cpt</span><span class="o">.</span><span class="n">groundwater_level_offset</span>
-                <span class="k">if</span> <span class="n">cpt</span><span class="o">.</span><span class="n">groundwater_level_offset</span>
-                <span class="k">else</span> <span class="n">cpt</span><span class="o">.</span><span class="n">delivered_vertical_position_offset</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;groundwaterLevelOffset&quot;</span><span class="p">:</span> <span class="n">groundwater_level_offset</span>
+                <span class="ow">or</span> <span class="n">cpt</span><span class="o">.</span><span class="n">groundwater_level_offset</span>
+                <span class="ow">or</span> <span class="n">cpt</span><span class="o">.</span><span class="n">delivered_vertical_position_offset</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
                 <span class="s2">&quot;layerTable&quot;</span><span class="p">:</span> <span class="p">{</span>
                     <span class="s2">&quot;gamma_sat&quot;</span><span class="p">:</span> <span class="n">classify_tables</span><span class="p">[</span><span class="n">cpt</span><span class="o">.</span><span class="n">alias</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gamma_sat&quot;</span><span class="p">),</span>
                     <span class="s2">&quot;gamma_unsat&quot;</span><span class="p">:</span> <span class="n">classify_tables</span><span class="p">[</span><span class="n">cpt</span><span class="o">.</span><span class="n">alias</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gamma_unsat&quot;</span><span class="p">),</span>

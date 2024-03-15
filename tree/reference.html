@@ -235,15 +235,15 @@
 <span id="impactforceinput"></span><h3>Input<a class="headerlink" href="#input" title="Permalink to this heading"></a></h3>
 <dl class="py function">
 <dt class="sig sig-object py" id="pyvibracore.input.impact_force_properties.create_multi_cpt_impact_force_payload">
-<span class="sig-prename descclassname"><span class="pre">pyvibracore.input.impact_force_properties.</span></span><span class="sig-name descname"><span class="pre">create_multi_cpt_impact_force_payload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cptdata_objects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classify_tables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibration_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">friction_strategy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drive_strategy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">installation_level_offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zeta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyvibracore/input/impact_force_properties.html#create_multi_cpt_impact_force_payload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyvibracore.input.impact_force_properties.create_multi_cpt_impact_force_payload" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pyvibracore.input.impact_force_properties.</span></span><span class="sig-name descname"><span class="pre">create_multi_cpt_impact_force_payload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cptdata_objects</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classify_tables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vibration_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">friction_strategy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drive_strategy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">installation_level_offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groundwater_level_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zeta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyvibracore/input/impact_force_properties.html#create_multi_cpt_impact_force_payload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyvibracore.input.impact_force_properties.create_multi_cpt_impact_force_payload" title="Permalink to this definition"></a></dt>
 <dd><p>Creates a dictionary with the payload content for the VibraCore endpoint
 “/impact-force/calculation/multi”</p>
 <p>This dictionary can be passed directly to <cite>nuclei.client.call_endpoint()</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cptdata_objects</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">CPTData</span></code>]) – A list of pygef.CPTData objects</p></li>
-<li><p><strong>classify_tables</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]) – <p>A dictionary, mapping <cite>CPTData.alias</cite> values to dictionary with the resulting response
+<li><p><strong>cptdata_objects</strong> (<em>List</em><em>[</em><em>CPTData</em><em>]</em>) – A list of pygef.CPTData objects</p></li>
+<li><p><strong>classify_tables</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>dict</em><em>]</em>) – <p>A dictionary, mapping <cite>CPTData.alias</cite> values to dictionary with the resulting response
 of a call to CPTCore <cite>classify/*</cite> information, containing the following keys:</p>
 <blockquote>
 <div><ul>
@@ -334,6 +334,8 @@ values must be provided within the cpt object.</p>
 <p>The push strategy calculates the impact force based on a push installation method.</p>
 </p></li>
 <li><p><strong>installation_level_offset</strong> (<em>float</em>) – Installation level of the sheet pile [m w.r.t REF]</p></li>
+<li><p><strong>groundwater_level_offset</strong> (<em>float</em><em>, </em><em>optional</em>) – Groundwater level for all cpts. if None groundwater level of cpt is used. if no
+groundwater level is set in the cpt we will take one meter below surface level [m w.r.t REF]</p></li>
 <li><p><strong>zeta</strong> (<em>float = 0.6</em>) – verknedingsfactor [-], used in the push drive strategy based on CUR 166 6th edition.</p></li>
 </ul>
 </dd>
