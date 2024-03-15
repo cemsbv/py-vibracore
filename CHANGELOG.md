@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.5] - 2024-03-15
+
+### Bug Fixes
+
+- Better error massage handling
+
+### Features
+
+- Add allow groundwater_level_offset to be set for project
+
 ## [0.1.4] - 2024-02-14
 
 ### Bug Fixes
