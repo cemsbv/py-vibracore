@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from copy import deepcopy
 from dataclasses import dataclass
 from typing import Dict, List, Literal
@@ -88,6 +90,7 @@ def create_multi_cpt_impact_force_payload(
     friction_strategy: Literal["CPTFrictionStrategy", "SlipFrictionStrategy"],
     drive_strategy: Literal["vibrate", "push"],
     installation_level_offset: float,
+    groundwater_level_offset: None | float = None,
     zeta: float = 0.6,
 ) -> dict:
     """
@@ -152,6 +155,9 @@ def create_multi_cpt_impact_force_payload(
         The push strategy calculates the impact force based on a push installation method.
     installation_level_offset: float
         Installation level of the sheet pile [m w.r.t REF]
+    groundwater_level_offset: float, optional
+        Groundwater level for all cpts. if None groundwater level of cpt is used. if no
+        groundwater level is set in the cpt we will take one meter below surface level [m w.r.t REF]
     zeta: float = 0.6
         verknedingsfactor [-], used in the push drive strategy based on CUR 166 6th edition.
 
@@ -177,9 +183,9 @@ def create_multi_cpt_impact_force_payload(
                     "y": cpt.delivered_location.y,
                 },
                 "customInterval": CustomInterval,
-                "groundwaterLevelOffset": cpt.groundwater_level_offset
-                if cpt.groundwater_level_offset
-                else cpt.delivered_vertical_position_offset - 1,
+                "groundwaterLevelOffset": groundwater_level_offset
+                or cpt.groundwater_level_offset
+                or cpt.delivered_vertical_position_offset - 1,
                 "layerTable": {
                     "gamma_sat": classify_tables[cpt.alias].get("gamma_sat"),
                     "gamma_unsat": classify_tables[cpt.alias].get("gamma_unsat"),
