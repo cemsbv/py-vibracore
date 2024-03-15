@@ -14,17 +14,34 @@ def wait_until_ticket_is_ready(client: NucleiClient, ticket: Response) -> None:
     while status in ["PENDING", "STARTED", "RETRY"]:
         sleep_time = min(sleep_time * 2, 10)
         sleep(sleep_time)
-        response = client.call_endpoint(
+        status_response = client.call_endpoint(
             "VibraCore", "/get-task-status", schema=ticket.json(), return_response=True
         )
-        if response.status_code != 200:
-            raise RuntimeError(rf"{response.text}")
-        status = response.json()["state"]
 
+        # Check if the status response is OK
+        if status_response.status_code != 200:
+            raise RuntimeError(rf"{status_response.text}")
+
+        status = status_response.json()["state"]
+
+    # If the status is FAILURE, raise an error
     if status == "FAILURE":
-        raise RuntimeError(
-            f'{response.json().get("msg")}\n{response.json().get("traceback")}'
-        )
+        # Get the task-status failure message
+        failure_message = status_response.json()["msg"]
+
+        # Try to get the task-result failure message
+        try:
+            result_response = client.call_endpoint(
+                "VibraCore",
+                "/get-task-results",
+                schema=ticket.json(),
+                return_response=True,
+            )
+            failure_message = result_response.text
+
+        # Raise the obtained failure message
+        finally:
+            raise RuntimeError(failure_message)
 
 
 def get_impact_force_report(client: NucleiClient, payload: dict) -> bytes:
