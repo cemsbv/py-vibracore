@@ -111,19 +111,30 @@ class VibrationResults:
         )
 
         # plot category 1 zone of influence
-        self.gdf.where(
-            np.logical_and(self.gdf["cat"] == "one", ~self.gdf["check"])
-        ).plot(
-            ax=axes, zorder=2, color=settings["insufficient_cat1"]["color"], aspect=1
-        )
-        self.gdf.where(
-            np.logical_and(self.gdf["cat"] == "two", ~self.gdf["check"])
-        ).plot(
-            ax=axes, zorder=2, color=settings["insufficient_cat2"]["color"], aspect=1
-        )
-        self.gdf.where(self.gdf.check).plot(
-            ax=axes, zorder=2, color=settings["sufficient"]["color"], aspect=1
-        )
+        if "insufficient_cat1" in settings.keys():
+            self.gdf.where(
+                np.logical_and(self.gdf["cat"] == "one", ~self.gdf["check"])
+            ).plot(
+                ax=axes,
+                zorder=2,
+                color=settings["insufficient_cat1"]["color"],
+                aspect=1,
+            )
+
+        if "insufficient_cat2" in settings.keys():
+            self.gdf.where(
+                np.logical_and(self.gdf["cat"] == "two", ~self.gdf["check"])
+            ).plot(
+                ax=axes,
+                zorder=2,
+                color=settings["insufficient_cat2"]["color"],
+                aspect=1,
+            )
+
+        if "sufficient" in settings.keys():
+            self.gdf.where(self.gdf.check).plot(
+                ax=axes, zorder=2, color=settings["sufficient"]["color"], aspect=1
+            )
         self.gdf.where(self.gdf.check).buffer(self.gdf.x_required).plot(
             ax=axes, alpha=0.25, zorder=1, aspect=1
         )
