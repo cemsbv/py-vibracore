@@ -236,34 +236,46 @@ def map_payload(
 
     fig, axes = plt.subplots(**kwargs_subplot)
 
-    gpd.GeoSeries(source_location).plot(
-        ax=axes, color=settings["source_location"]["color"], alpha=1, zorder=1, aspect=1
-    )
+    if "source_location" in settings.keys():
+        gpd.GeoSeries(source_location).plot(
+            ax=axes,
+            color=settings["source_location"]["color"],
+            alpha=1,
+            zorder=1,
+            aspect=1,
+        )
 
-    gdf.where(
-        np.logical_and(
-            gdf["category"] == "one",
-            np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
-        )
-    ).plot(ax=axes, zorder=2, color=settings["sensitive_cat1"]["color"], aspect=1)
-    gdf.where(
-        np.logical_and(
-            gdf["category"] == "one",
-            ~np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
-        )
-    ).plot(ax=axes, zorder=2, color=settings["normal_cat1"]["color"], aspect=1)
-    gdf.where(
-        np.logical_and(
-            gdf["category"] == "two",
-            np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
-        )
-    ).plot(ax=axes, zorder=2, color=settings["sensitive_cat2"]["color"], aspect=1)
-    gdf.where(
-        np.logical_and(
-            gdf["category"] == "two",
-            ~np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
-        )
-    ).plot(ax=axes, zorder=2, color=settings["normal_cat2"]["color"], aspect=1)
+    if "sensitive_cat1" in settings.keys():
+        gdf.where(
+            np.logical_and(
+                gdf["category"] == "one",
+                np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
+            )
+        ).plot(ax=axes, zorder=2, color=settings["sensitive_cat1"]["color"], aspect=1)
+
+    if "normal_cat1" in settings.keys():
+        gdf.where(
+            np.logical_and(
+                gdf["category"] == "one",
+                ~np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
+            )
+        ).plot(ax=axes, zorder=2, color=settings["normal_cat1"]["color"], aspect=1)
+
+    if "sensitive_cat2" in settings.keys():
+        gdf.where(
+            np.logical_and(
+                gdf["category"] == "two",
+                np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
+            )
+        ).plot(ax=axes, zorder=2, color=settings["sensitive_cat2"]["color"], aspect=1)
+
+    if "normal_cat2" in settings.keys():
+        gdf.where(
+            np.logical_and(
+                gdf["category"] == "two",
+                ~np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
+            )
+        ).plot(ax=axes, zorder=2, color=settings["normal_cat2"]["color"], aspect=1)
 
     for idx, row in gdf.iterrows():
         x = row.geometry.centroid.xy[0][0]
