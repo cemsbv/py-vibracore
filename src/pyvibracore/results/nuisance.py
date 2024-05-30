@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, Tuple
+from typing import Any, List, Sequence, Tuple
 
 import geopandas as gpd
 import matplotlib.patches as patches
@@ -8,13 +8,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
-from scipy import interpolate
 from scipy.interpolate import interpolate
 from shapely.geometry import LineString, Point, Polygon
 
 from pyvibracore.results.plot_utils import _north_arrow, _scalebar
 
-# CUR 166-1997 Tabel 5.20 Factor Cfc voor flooren
+# CUR 166-1997 Tabel 5.20 Factor Cfc
 CFC_FACTOR_FLOORS = {
     "driving": {
         "concrete": {"Cfc": 1.4, "Vfc": 0.17},
@@ -26,6 +25,7 @@ CFC_FACTOR_FLOORS = {
     },
 }
 
+# SBR-B Trillingen meet en beoordelingsrichtlijnen hinder voor personen in gebouwen [2002] art. 10.5.4 Table 4
 TARGET_VALUE = {
     "<= 1 day": [0.8, 6, 0.4],
     "2 days": [0.72, 6, 0.38],
@@ -38,31 +38,30 @@ TARGET_VALUE = {
 
 
 def _nuisance_prediction(
-    A1: List[float],
-    A2: List[float],
-    A3: List[float],
-    vibrationVelocity_eff: List[float],
-    vibrationVelocity_per: List[float],
-    distance: List[float],
+    target_value_one: List[float] | NDArray | Sequence,
+    target_value_two: List[float] | NDArray | Sequence,
+    target_value_three: List[float] | NDArray | Sequence,
+    vibration_velocity_eff: List[float] | NDArray,
+    vibration_velocity_per: List[float] | NDArray,
+    distance: List[float] | NDArray,
 ) -> NDArray:
     """
-    Based on the 'Handleiding meten en rekenen industrielawaai' 2004 methode l.
-    More information: https://open.overheid.nl/Details/ronl-15eb5528-d835-4f6a-b3a1-fc0851b334f9/1
+    Based on the 'SBR-B Trillingen meet en beoordelingsrichtlijnen hinder voor personen in gebouwen [2002]'.
 
     Parameters
     ----------
-    A1:
-        target value [-]
-    A2:
-        target value [-]
-    A3:
-        target value [-]
-    vibrationVelocity_eff:
+    target_value_one:
+        target value SBR-B [2002] art. 10.5.1 [-]
+    target_value_two:
+        target value SBR-B [2002] art. 10.5.1 [-]
+    target_value_three:
+        target value SBR-B [2002] art. 10.5.1 [-]
+    vibration_velocity_eff:
         vibration velocity [mm/s]
-    vibrationVelocity_per: list
+    vibration_velocity_per: list
         vibration velocity [mm/s]
     distance:
-        distance with respect ot building [m]
+        distance with respect to building [m]
 
     Returns
     -------
@@ -71,8 +70,8 @@ def _nuisance_prediction(
 
     df = pd.DataFrame(
         {
-            "vibrationVelocity_per": vibrationVelocity_per,
-            "vibrationVelocity_eff": vibrationVelocity_eff,
+            "vibrationVelocity_per": vibration_velocity_per,
+            "vibrationVelocity_eff": vibration_velocity_eff,
             "distance": distance,
         }
     ).drop_duplicates(subset=["vibrationVelocity_per", "vibrationVelocity_eff"])
@@ -85,8 +84,8 @@ def _nuisance_prediction(
         assume_sorted=False,
         fill_value="extrapolate",
     )
-    A1_d = f_eff(A1)
-    A2_d = f_eff(A2)
+    target_value_one_spaces = f_eff(target_value_one)
+    target_value_two_spaces = f_eff(target_value_two)
 
     # interpolate and predict
     f_per = interpolate.interp1d(
@@ -96,9 +95,15 @@ def _nuisance_prediction(
         assume_sorted=False,
         fill_value="extrapolate",
     )
-    A3_d = f_per(A3)
+    target_value_three_spaces = f_per(target_value_three)
 
-    return np.min([np.max([A2_d, A3_d], axis=0), A1_d], axis=0)
+    return np.min(
+        [
+            np.max([target_value_two_spaces, target_value_three_spaces], axis=0),
+            target_value_one_spaces,
+        ],
+        axis=0,
+    )
 
 
 def df_nuisance(
@@ -107,11 +112,33 @@ def df_nuisance(
     u_eff: float,
     period: float,
 ) -> pd.DataFrame:
+    """
+    Get a DataFrame that holds the distance of the different durations
+
+    Parameters
+    ----------
+    response_dict:
+        response of the single prepal or cur166 endpoint.
+    u_eff:
+        Vibration transfer to part of a building (u_eff) CUR 166-1997 page 514 [-]
+    cfc:
+        Vibration transfer to part of a building (Cfc) CUR 166-1997 table 5.20 or 5.21 [-]
+    period:
+        Operating period of the building code [hours]
+
+    Returns
+    -------
+    dataframe
+    """
     arr = np.array(response_dict["data"]["vibrationVelocity"])
+    a_one, a_two, a_three = [*zip(*TARGET_VALUE.values())]
+
     distances = _nuisance_prediction(
-        *zip(*TARGET_VALUE.values()),
-        vibrationVelocity_per=arr * cfc * u_eff * np.sqrt(period / 12),
-        vibrationVelocity_eff=arr * cfc * u_eff,
+        target_value_one=a_one,
+        target_value_two=a_two,
+        target_value_three=a_three,
+        vibration_velocity_per=arr * cfc * u_eff * np.sqrt(period / 12),
+        vibration_velocity_eff=arr * cfc * u_eff,
         distance=response_dict["data"]["distance"],
     )
 
@@ -168,28 +195,15 @@ def map_nuisance(
                 "source_location": {"label": "Trillingsbron", "color": "blue"},
                 "levels": [
                     {
-                        "label": ">80 db [0 dagen]",
-                        "level": 80,
+                        "label": "<= 1 day",
                         "color": "darkred",
                     },
                     {
-                        "label": ">75 db [5 dagen]",
-                        "level": 75,
-                        "color": "red",
-                    },
-                    {
-                        "label": ">70 db [15 dagen]",
-                        "level": 70,
+                        "label": ">= 6 days; <26 days",
                         "color": "orange",
                     },
                     {
-                        "label": ">65 db [30 dagen]",
-                        "level": 65,
-                        "color": "darkgreen",
-                    },
-                    {
-                        "label": ">60 db [50 dagen]",
-                        "level": 60,
+                        "label": ">= 26 days; <78 days",
                         "color": "green",
                     },
                 ],
@@ -247,10 +261,14 @@ def map_nuisance(
     # plot contour
     levels = [TARGET_VALUE[values["label"]] for values in settings["levels"]]
     arr = np.array(response_dict["data"]["vibrationVelocity"])
+    a_one, a_two, a_three = [*zip(*levels)]
+
     distances = _nuisance_prediction(
-        *zip(*levels),
-        vibrationVelocity_per=arr * cfc * u_eff * np.sqrt(period / 12),
-        vibrationVelocity_eff=arr * cfc * u_eff,
+        target_value_one=a_one,
+        target_value_two=a_two,
+        target_value_three=a_three,
+        vibration_velocity_per=arr * cfc * u_eff * np.sqrt(period / 12),
+        vibration_velocity_eff=arr * cfc * u_eff,
         distance=response_dict["data"]["distance"],
     )
     colors = [values["color"] for values in settings["levels"]]
