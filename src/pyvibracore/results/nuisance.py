@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, List, Sequence, Tuple
+from copy import deepcopy
+from typing import Any, List, Literal, Sequence, Tuple
 
 import geopandas as gpd
 import matplotlib.patches as patches
@@ -8,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
-from scipy.interpolate import interpolate
+from scipy.interpolate import interp1d
 from shapely.geometry import LineString, Point, Polygon
 
 from pyvibracore.results.plot_utils import _north_arrow, _scalebar
@@ -34,7 +35,44 @@ TARGET_VALUE = {
     "5 days": [0.48, 6, 0.32],
     ">= 6 days; <26 days": [0.4, 6, 0.3],
     ">= 26 days; <78 days": [0.3, 6, 0.2],
+    "Unlimited": {
+        "short-term": {
+            "woonfunctie": [0.2, 0.8, 0.1],
+            "gezondheidsfunctie": [0.2, 0.8, 0.1],
+            "onderwijsfunctie": [0.3, 1.2, 0.15],
+        },
+        "repeated-short-term": {
+            "woonfunctie": [0.2, 0.8, 0.1],
+            "gezondheidsfunctie": [0.2, 0.8, 0.1],
+            "onderwijsfunctie": [0.3, 1.2, 0.15],
+        },
+        "continuous": {
+            "woonfunctie": [0.1, 0.4, 0.05],
+            "gezondheidsfunctie": [0.1, 0.4, 0.05],
+            "onderwijsfunctie": [0.15, 0.6, 0.07],
+        },
+    },
 }
+
+
+def _get_target_value(
+    vibration_type: Literal["short-term", "repeated-short-term", "continuous"],
+    building_function: str,
+) -> dict:
+    if "woonfunctie" in building_function:
+        _building_function = "woonfunctie"
+    elif "gezondheidsfunctie" in building_function:
+        _building_function = "gezondheidsfunctie"
+    elif "onderwijsfunctie" in building_function:
+        _building_function = "onderwijsfunctie"
+    else:
+        _building_function = "other"
+
+    _body = deepcopy(TARGET_VALUE)
+    _body["Unlimited"] = TARGET_VALUE["Unlimited"][vibration_type].get(  # type: ignore
+        _building_function, [np.nan, np.nan, np.nan]
+    )
+    return _body
 
 
 def _nuisance_prediction(
@@ -77,10 +115,10 @@ def _nuisance_prediction(
     ).drop_duplicates(subset=["vibrationVelocity_per", "vibrationVelocity_eff"])
 
     # interpolate and predict
-    f_eff = interpolate.interp1d(
+    f_eff = interp1d(
         df["vibrationVelocity_eff"],
         df["distance"],
-        kind="cubic",
+        kind="linear",
         assume_sorted=False,
         fill_value="extrapolate",
     )
@@ -88,10 +126,10 @@ def _nuisance_prediction(
     target_value_two_spaces = f_eff(target_value_two)
 
     # interpolate and predict
-    f_per = interpolate.interp1d(
+    f_per = interp1d(
         df["vibrationVelocity_per"],
         df["distance"],
-        kind="cubic",
+        kind="linear",
         assume_sorted=False,
         fill_value="extrapolate",
     )
@@ -107,22 +145,32 @@ def _nuisance_prediction(
 
 
 def df_nuisance(
+    buildings: gpd.GeoDataFrame,
     response_dict: dict,
-    cfc: float,
-    u_eff: float,
-    period: float,
+    building_name: str,
+    vibration_type: Literal[
+        "short-term", "repeated-short-term", "continuous"
+    ] = "continuous",
+    installation_type: Literal["vibrate", "driving"] = "vibrate",
+    period: float = 10,
 ) -> pd.DataFrame:
     """
     Get a DataFrame that holds the distance of the different durations
 
     Parameters
     ----------
+    buildings:
+        GeoDataFrame of the input buildings
     response_dict:
         response of the single prepal or cur166 endpoint.
-    u_eff:
-        Vibration transfer to part of a building (u_eff) CUR 166-1997 page 514 [-]
-    cfc:
-        Vibration transfer to part of a building (Cfc) CUR 166-1997 table 5.20 or 5.21 [-]
+    building_name:
+        name of the building
+    vibration_type
+        Based on the SBR A table 10.4.
+    installation_type
+        Based on CUR 166 3rd edition table 5.20 or 5.21
+    period:
+        Operating period of the building code [hours]
     period:
         Operating period of the building code [hours]
 
@@ -130,8 +178,20 @@ def df_nuisance(
     -------
     dataframe
     """
+    building = buildings.get(buildings["name"] == building_name)
+    if building.empty:
+        raise ValueError(f"No buildings with name {building_name}.")
+
+    levels = _get_target_value(
+        vibration_type,
+        building_function=building["gebruiksdoel"].item(),
+    ).values()
     arr = np.array(response_dict["data"]["vibrationVelocity"])
-    a_one, a_two, a_three = [*zip(*TARGET_VALUE.values())]
+    a_one, a_two, a_three = [*zip(*levels)]
+
+    # safety factors
+    cfc = CFC_FACTOR_FLOORS[installation_type][building["material"].item()]["Cfc"]
+    u_eff = 0.64 if vibration_type == "continuous" else 0.42
 
     distances = _nuisance_prediction(
         target_value_one=a_one,
@@ -144,9 +204,9 @@ def df_nuisance(
 
     return pd.DataFrame(
         {
-            "labels": TARGET_VALUE.keys(),
-            "distance": distances,
-        }
+            building_name: distances,
+        },
+        index=list(TARGET_VALUE.keys()),
     )
 
 
@@ -155,9 +215,11 @@ def map_nuisance(
     source_location: Point | LineString | Polygon,
     building_name: str,
     response_dict: dict,
-    cfc: float,
-    u_eff: float,
-    period: float,
+    vibration_type: Literal[
+        "short-term", "repeated-short-term", "continuous"
+    ] = "continuous",
+    installation_type: Literal["vibrate", "driving"] = "vibrate",
+    period: float = 10,
     title: str = "Legend:",
     figsize: Tuple[float, float] = (10.0, 12.0),
     settings: dict | None = None,
@@ -176,10 +238,10 @@ def map_nuisance(
         location of the vibration source
     building_name:
         name of the building
-    u_eff:
-        Vibration transfer to part of a building (u_eff) CUR 166-1997 page 514 [-]
-    cfc:
-        Vibration transfer to part of a building (Cfc) CUR 166-1997 table 5.20 or 5.21 [-]
+    vibration_type
+        Based on the SBR A table 10.4.
+    installation_type
+        Based on CUR 166 3rd edition table 5.20 or 5.21
     period:
         Operating period of the building code [hours]
     title:
@@ -259,9 +321,19 @@ def map_nuisance(
     )
 
     # plot contour
-    levels = [TARGET_VALUE[values["label"]] for values in settings["levels"]]
+    levels = [
+        _get_target_value(
+            vibration_type,
+            building_function=building["gebruiksdoel"].item(),
+        )[values["label"]]
+        for values in settings["levels"]
+    ]
     arr = np.array(response_dict["data"]["vibrationVelocity"])
     a_one, a_two, a_three = [*zip(*levels)]
+
+    # safety factors
+    cfc = CFC_FACTOR_FLOORS[installation_type][building["material"].item()]["Cfc"]
+    u_eff = 0.64 if vibration_type == "continuous" else 0.42
 
     distances = _nuisance_prediction(
         target_value_one=a_one,
