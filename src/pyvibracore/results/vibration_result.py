@@ -260,7 +260,9 @@ def map_payload(
         gdf.where(
             np.logical_and(
                 gdf["category"] == "one",
-                np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
+                np.logical_or(
+                    gdf["monumental"], gdf["structuralCondition"] == "sensitive"
+                ),
             )
         ).plot(ax=axes, zorder=2, color=settings["sensitive_cat1"]["color"], aspect=1)
 
@@ -268,7 +270,9 @@ def map_payload(
         gdf.where(
             np.logical_and(
                 gdf["category"] == "one",
-                ~np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
+                ~np.logical_or(
+                    gdf["monumental"], gdf["structuralCondition"] == "sensitive"
+                ),
             )
         ).plot(ax=axes, zorder=2, color=settings["normal_cat1"]["color"], aspect=1)
 
@@ -276,7 +280,9 @@ def map_payload(
         gdf.where(
             np.logical_and(
                 gdf["category"] == "two",
-                np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
+                np.logical_or(
+                    gdf["monumental"], gdf["structuralCondition"] == "sensitive"
+                ),
             )
         ).plot(ax=axes, zorder=2, color=settings["sensitive_cat2"]["color"], aspect=1)
 
@@ -284,7 +290,9 @@ def map_payload(
         gdf.where(
             np.logical_and(
                 gdf["category"] == "two",
-                ~np.logical_or(gdf["monumental"], gdf["vibrationSensitive"]),
+                ~np.logical_or(
+                    gdf["monumental"], gdf["structuralCondition"] == "sensitive"
+                ),
             )
         ).plot(ax=axes, zorder=2, color=settings["normal_cat2"]["color"], aspect=1)
 
