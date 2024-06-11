@@ -186,7 +186,9 @@ def df_nuisance(
         vibration_type,
         building_function=building["gebruiksdoel"].item(),
     ).values()
-    arr = np.array(response_dict["data"]["vibrationVelocity"])
+    arr = np.array(response_dict["data"]["vibrationVelocity"]) / response_dict[
+        "calculation"
+    ].get("gamma", 1)
     a_one, a_two, a_three = [*zip(*levels)]
 
     # safety factors
@@ -328,7 +330,9 @@ def map_nuisance(
         )[values["label"]]
         for values in settings["levels"]
     ]
-    arr = np.array(response_dict["data"]["vibrationVelocity"])
+    arr = np.array(response_dict["data"]["vibrationVelocity"]) / response_dict[
+        "calculation"
+    ].get("gamma", 1)
     a_one, a_two, a_three = [*zip(*levels)]
 
     # safety factors
