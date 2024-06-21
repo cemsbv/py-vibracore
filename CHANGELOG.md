@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2024-06-21
+
+### Bug Fixes
+
+- Update notebook SBR; add `to_csv` for all dataframes
+- Reduce vibration velocity with reliability index
+- Update logic for building plot
+
+### Documentation
+
+- Use more descriptive attribute names
+
+### Features
+
+- *(sbr-b)* Allow multi building validation
+- Add SBR-B to notebook
+- Initial setup SBR-B
+
 ## [0.1.7] - 2024-03-19
 
 ### Features
