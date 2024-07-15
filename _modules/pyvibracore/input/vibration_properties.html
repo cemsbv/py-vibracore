@@ -83,6 +83,7 @@
 
 <span class="kn">import</span> <span class="nn">geopandas</span> <span class="k">as</span> <span class="nn">gpd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">mapping</span>
 
@@ -113,7 +114,7 @@
         <span class="s2">&quot;bag:woonplaats&quot;</span><span class="p">,</span>
         <span class="s2">&quot;bag:standplaats&quot;</span><span class="p">,</span>
     <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bag:pand&quot;</span><span class="p">,</span>
-    <span class="n">pagesize</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;10&quot;</span><span class="p">,</span> <span class="s2">&quot;20&quot;</span><span class="p">,</span> <span class="s2">&quot;50&quot;</span><span class="p">,</span> <span class="s2">&quot;100&quot;</span><span class="p">,</span> <span class="s2">&quot;1000&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;1000&quot;</span><span class="p">,</span>
+    <span class="n">pagesize</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get a GeoDataFrame with the default values for CUR166 and PrePal methode.</span>
@@ -173,25 +174,35 @@
         <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="s2">&quot;WFS&quot;</span><span class="p">,</span>
         <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;2.0.0&quot;</span><span class="p">,</span>
         <span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="s2">&quot;GetFeature&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pagingEnabled&quot;</span><span class="p">:</span> <span class="s2">&quot;True&quot;</span><span class="p">,</span>
         <span class="s2">&quot;typeName&quot;</span><span class="p">:</span> <span class="n">feature</span><span class="p">,</span>
         <span class="s2">&quot;srsname&quot;</span><span class="p">:</span> <span class="s2">&quot;EPSG:28992&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;outputFormat&quot;</span><span class="p">:</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;outputFormat&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json; subtype=geojson&quot;</span><span class="p">,</span>
         <span class="s2">&quot;bbox&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">west</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">south</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">east</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">north</span><span class="p">),</span>
         <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="n">pagesize</span><span class="p">,</span>
+        <span class="s2">&quot;startindex&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">}</span>
+    <span class="n">paging</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">paging</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">BAG_WFS_URL</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span>
+            <span class="n">params</span><span class="o">=</span><span class="n">wfs_query_params</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">_gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()),</span> <span class="n">driver</span><span class="o">=</span><span class="s2">&quot;GeoJSON&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span>
+            <span class="s2">&quot;EPSG:28992&quot;</span>
+        <span class="p">)</span>
+        <span class="n">array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_gdf</span><span class="p">)</span>
+        <span class="n">paging</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_gdf</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">wfs_query_params</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">])</span>
+        <span class="n">wfs_query_params</span><span class="p">[</span><span class="s2">&quot;startindex&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">wfs_query_params</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span>
+            <span class="n">wfs_query_params</span><span class="p">[</span><span class="s2">&quot;startindex&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
 
-    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="n">BAG_WFS_URL</span><span class="p">,</span>
-        <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span>
-        <span class="n">params</span><span class="o">=</span><span class="n">wfs_query_params</span><span class="p">,</span>
-        <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
-
-    <span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()),</span> <span class="n">driver</span><span class="o">=</span><span class="s2">&quot;GeoJSON&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span>
-        <span class="s2">&quot;EPSG:28992&quot;</span>
-    <span class="p">)</span>
+    <span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">array</span><span class="p">))</span>
 
     <span class="c1"># add default values</span>
     <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>

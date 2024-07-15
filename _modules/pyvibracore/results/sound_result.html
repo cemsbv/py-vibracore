@@ -83,6 +83,7 @@
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
 <span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">interpolate</span>
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">LineString</span><span class="p">,</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span>
@@ -295,11 +296,21 @@
         <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower right&quot;</span><span class="p">,</span>
         <span class="n">handles</span><span class="o">=</span><span class="p">[</span>
             <span class="n">patches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span>
-                <span class="n">facecolor</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">],</span>
-                <span class="n">label</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">],</span>
+                <span class="n">facecolor</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;source_location&quot;</span><span class="p">][</span><span class="s2">&quot;color&quot;</span><span class="p">],</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;source_location&quot;</span><span class="p">][</span><span class="s2">&quot;label&quot;</span><span class="p">],</span>
                 <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
                 <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                 <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">]</span>
+        <span class="o">+</span> <span class="p">[</span>
+            <span class="n">Line2D</span><span class="p">(</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">],</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">],</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+                <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;levels&quot;</span><span class="p">]</span>
         <span class="p">],</span>
