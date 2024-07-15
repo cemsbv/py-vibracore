@@ -8,6 +8,7 @@ from typing import Literal
 
 import geopandas as gpd
 import numpy as np
+import pandas as pd
 import requests
 from shapely.geometry import LineString, Point, Polygon, mapping
 
@@ -38,7 +39,7 @@ def get_buildings_geodataframe(
         "bag:woonplaats",
         "bag:standplaats",
     ] = "bag:pand",
-    pagesize: Literal["10", "20", "50", "100", "1000"] = "1000",
+    pagesize: Literal[10, 20, 50, 100, 1000] = 1000,
 ) -> gpd.GeoDataFrame:
     """
     Get a GeoDataFrame with the default values for CUR166 and PrePal methode.
@@ -98,25 +99,35 @@ def get_buildings_geodataframe(
         "service": "WFS",
         "version": "2.0.0",
         "request": "GetFeature",
+        "pagingEnabled": "True",
         "typeName": feature,
         "srsname": "EPSG:28992",
-        "outputFormat": "json",
+        "outputFormat": "application/json; subtype=geojson",
         "bbox": str(west) + "," + str(south) + "," + str(east) + "," + str(north),
         "count": pagesize,
+        "startindex": 0,
     }
+    paging = True
+    array = []
+    while paging:
+        response = requests.get(
+            url=BAG_WFS_URL,
+            headers={"Content-Type": "application/json"},
+            params=wfs_query_params,
+            timeout=5,
+        )
+        if not response.ok:
+            raise RuntimeError(response.text)
+        _gdf = gpd.read_file(json.dumps(response.json()), driver="GeoJSON").to_crs(
+            "EPSG:28992"
+        )
+        array.append(_gdf)
+        paging = len(_gdf) == int(wfs_query_params["count"])
+        wfs_query_params["startindex"] = int(wfs_query_params["count"]) + int(
+            wfs_query_params["startindex"]
+        )
 
-    response = requests.get(
-        url=BAG_WFS_URL,
-        headers={"Content-Type": "application/json"},
-        params=wfs_query_params,
-        timeout=5,
-    )
-    if not response.ok:
-        raise RuntimeError(response.text)
-
-    gdf = gpd.read_file(json.dumps(response.json()), driver="GeoJSON").to_crs(
-        "EPSG:28992"
-    )
+    gdf = gpd.GeoDataFrame(pd.concat(array))
 
     # add default values
     gdf["name"] = gdf.index.astype(str)
