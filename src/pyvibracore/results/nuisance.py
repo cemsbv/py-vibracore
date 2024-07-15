@@ -8,6 +8,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.lines import Line2D
 from numpy.typing import NDArray
 from scipy.interpolate import interp1d
 from shapely.geometry import LineString, Point, Polygon
@@ -259,14 +260,17 @@ def map_nuisance(
                 "source_location": {"label": "Trillingsbron", "color": "blue"},
                 "levels": [
                     {
+                        "key": "<= 1 day",
                         "label": "<= 1 day",
                         "color": "darkred",
                     },
                     {
+                        "key": ">= 6 days; <26 days",
                         "label": ">= 6 days; <26 days",
                         "color": "orange",
                     },
                     {
+                        "key": ">= 26 days; <78 days",
                         "label": ">= 26 days; <78 days",
                         "color": "green",
                     },
@@ -284,14 +288,17 @@ def map_nuisance(
             "source_location": {"label": "Trillingsbron", "color": "blue"},
             "levels": [
                 {
+                    "key": "<= 1 day",
                     "label": "<= 1 day",
                     "color": "darkred",
                 },
                 {
+                    "key": ">= 6 days; <26 days",
                     "label": ">= 6 days; <26 days",
                     "color": "orange",
                 },
                 {
+                    "key": ">= 26 days; <78 days",
                     "label": ">= 26 days; <78 days",
                     "color": "green",
                 },
@@ -327,7 +334,7 @@ def map_nuisance(
         _get_target_value(
             vibration_type,
             building_function=building["gebruiksdoel"].item(),
-        )[values["label"]]
+        )[values["key"]]
         for values in settings["levels"]
     ]
     arr = np.array(response_dict["data"]["vibrationVelocity"]) / response_dict[
@@ -372,11 +379,21 @@ def map_nuisance(
         loc="lower right",
         handles=[
             patches.Patch(
-                facecolor=value["color"],
-                label=value["label"],
+                facecolor=settings["source_location"]["color"],
+                label=settings["source_location"]["label"],
                 alpha=0.9,
                 linewidth=2,
                 edgecolor="black",
+            )
+        ]
+        + [
+            Line2D(
+                [0],
+                [0],
+                color=value["color"],
+                label=value["label"],
+                alpha=0.9,
+                linewidth=2,
             )
             for value in settings["levels"]
         ],

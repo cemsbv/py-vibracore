@@ -8,6 +8,7 @@ import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.lines import Line2D
 from numpy.typing import NDArray
 from scipy import interpolate
 from shapely.geometry import LineString, Point, Polygon
@@ -220,11 +221,21 @@ def map_sound(
         loc="lower right",
         handles=[
             patches.Patch(
-                facecolor=value["color"],
-                label=value["label"],
+                facecolor=settings["source_location"]["color"],
+                label=settings["source_location"]["label"],
                 alpha=0.9,
                 linewidth=2,
                 edgecolor="black",
+            )
+        ]
+        + [
+            Line2D(
+                [0],
+                [0],
+                color=value["color"],
+                label=value["label"],
+                alpha=0.9,
+                linewidth=2,
             )
             for value in settings["levels"]
         ],
