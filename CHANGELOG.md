@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2024-07-25
+
+### Bug Fixes
+
+- *(SBRb)* Change A3 values for day 3 and 4
+- *(SBR)* Paging wfs query
+
+### Miscellaneous Tasks
+
+- *(SBR)* Update notebook add matplotlib widget
+- *(SBR)* Use Line2D in plot legend
+- *(SBR)* Relocated referenceLocation to CUR codeblock
+
 ## [0.2.0] - 2024-06-21
 
 ### Bug Fixes
