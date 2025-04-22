@@ -48,6 +48,7 @@ notebook = [
     "contextily>=1.6.2,<2",
     "tqdm[notebook]>=4.67.1,<5",
     "ipympl>=0.9.7,<0.10",
+    "fiona>=1.10.1,<2",
 ]
 
 [tool.isort]
