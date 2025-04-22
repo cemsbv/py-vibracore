@@ -1,20 +1,22 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pyvibracore.results.sound_result &mdash; py-vibracore 0.2.1 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/index.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/index.css?v=6c0e5716" />
+
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -137,7 +139,9 @@
     <span class="k">return</span> <span class="n">space</span>
 
 
-<div class="viewcode-block" id="map_sound"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.sound_result.map_sound">[docs]</a><span class="k">def</span> <span class="nf">map_sound</span><span class="p">(</span>
+<div class="viewcode-block" id="map_sound">
+<a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.sound_result.map_sound">[docs]</a>
+<span class="k">def</span> <span class="nf">map_sound</span><span class="p">(</span>
     <span class="n">buildings</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">source_location</span><span class="p">:</span> <span class="n">Point</span> <span class="o">|</span> <span class="n">LineString</span> <span class="o">|</span> <span class="n">Polygon</span><span class="p">,</span>
     <span class="n">building_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -322,7 +326,10 @@
     <span class="k">return</span> <span class="n">fig</span></div>
 
 
-<div class="viewcode-block" id="get_normative_building"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.sound_result.get_normative_building">[docs]</a><span class="k">def</span> <span class="nf">get_normative_building</span><span class="p">(</span>
+
+<div class="viewcode-block" id="get_normative_building">
+<a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.sound_result.get_normative_building">[docs]</a>
+<span class="k">def</span> <span class="nf">get_normative_building</span><span class="p">(</span>
     <span class="n">buildings</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">location</span><span class="p">:</span> <span class="n">Polygon</span> <span class="o">|</span> <span class="n">LineString</span> <span class="o">|</span> <span class="n">Point</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
@@ -360,6 +367,7 @@
     <span class="k">with</span> <span class="n">pd</span><span class="o">.</span><span class="n">option_context</span><span class="p">(</span><span class="s2">&quot;mode.chained_assignment&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">gdf</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;distance&quot;</span><span class="p">,</span> <span class="n">na_position</span><span class="o">=</span><span class="s2">&quot;last&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

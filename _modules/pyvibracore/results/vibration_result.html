@@ -1,20 +1,22 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pyvibracore.results.vibration_result &mdash; py-vibracore 0.2.1 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/index.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/index.css?v=6c0e5716" />
+
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=37f418d5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -88,7 +90,9 @@
 <span class="kn">from</span> <span class="nn">pyvibracore.results.plot_utils</span> <span class="kn">import</span> <span class="n">_north_arrow</span><span class="p">,</span> <span class="n">_scalebar</span>
 
 
-<div class="viewcode-block" id="VibrationResults"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.vibration_result.VibrationResults">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="VibrationResults">
+<a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.vibration_result.VibrationResults">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">VibrationResults</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dataclass that holds the information from `/cur166/validation/multi` or `/prepal/validation/multi`</span>
@@ -101,7 +105,9 @@
 
     <span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span>
 
-<div class="viewcode-block" id="VibrationResults.from_api_response"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.vibration_result.VibrationResults.from_api_response">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="VibrationResults.from_api_response">
+<a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.vibration_result.VibrationResults.from_api_response">[docs]</a>
+    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_api_response</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">response_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;VibrationResults&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stores the response of the VibraCore endpoint</span>
@@ -117,7 +123,10 @@
             <span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="VibrationResults.map"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.vibration_result.VibrationResults.map">[docs]</a>    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span>
+
+<div class="viewcode-block" id="VibrationResults.map">
+<a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.vibration_result.VibrationResults.map">[docs]</a>
+    <span class="k">def</span> <span class="nf">map</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">source_location</span><span class="p">:</span> <span class="n">Point</span> <span class="o">|</span> <span class="n">LineString</span> <span class="o">|</span> <span class="n">Polygon</span><span class="p">,</span>
         <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Legend:&quot;</span><span class="p">,</span>
@@ -248,10 +257,14 @@
         <span class="n">_north_arrow</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
         <span class="n">_scalebar</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">fig</span></div></div>
+        <span class="k">return</span> <span class="n">fig</span></div>
+</div>
 
 
-<div class="viewcode-block" id="map_payload"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.vibration_result.map_payload">[docs]</a><span class="k">def</span> <span class="nf">map_payload</span><span class="p">(</span>
+
+<div class="viewcode-block" id="map_payload">
+<a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.vibration_result.map_payload">[docs]</a>
+<span class="k">def</span> <span class="nf">map_payload</span><span class="p">(</span>
     <span class="n">gdf</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">,</span>
     <span class="n">source_location</span><span class="p">:</span> <span class="n">Point</span> <span class="o">|</span> <span class="n">LineString</span> <span class="o">|</span> <span class="n">Polygon</span><span class="p">,</span>
     <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Legend:&quot;</span><span class="p">,</span>
@@ -405,7 +418,10 @@
     <span class="k">return</span> <span class="n">fig</span></div>
 
 
-<div class="viewcode-block" id="plot_reduction"><a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.vibration_result.plot_reduction">[docs]</a><span class="k">def</span> <span class="nf">plot_reduction</span><span class="p">(</span>
+
+<div class="viewcode-block" id="plot_reduction">
+<a class="viewcode-back" href="../../../tree/reference.html#pyvibracore.results.vibration_result.plot_reduction">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_reduction</span><span class="p">(</span>
     <span class="n">response_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">sensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">figsize</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
@@ -518,6 +534,7 @@
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fig</span></div>
+
 </pre></div>
 
            </div>
