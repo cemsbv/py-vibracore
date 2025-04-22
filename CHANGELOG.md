@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.1] - 2025-04-22
+
+### Bug Fixes
+
+#### Dependencies
+
+- Add fiona dependency to fix SBR notebook
+
+
 ## [0.3.0] - 2025-04-22
 
 ### Bug Fixes
