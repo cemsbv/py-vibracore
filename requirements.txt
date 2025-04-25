@@ -208,7 +208,7 @@ numpy==1.26.2
     #   scipy
     #   shapely
     #   snuggs
-orjson==3.9.10
+orjson==3.9.15
     # via cems-nuclei
 packaging==23.2
     # via
