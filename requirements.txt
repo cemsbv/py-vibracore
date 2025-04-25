@@ -435,7 +435,7 @@ yamllint==1.35.1
     #   py-vibracore (pyproject.toml)
 yq==3.4.3
     # via py-vibracore (pyproject.toml)
-zipp==3.17.0
+zipp==3.19.1
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
