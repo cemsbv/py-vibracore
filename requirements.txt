@@ -10,40 +10,40 @@ alabaster==1.0.0
     # via sphinx
 annotated-types==0.7.0
     # via pydantic
-ansible-compat==25.1.5
+ansible-compat==25.12.0
     # via ansible-lint
-ansible-core==2.18.5
+ansible-core==2.20.0
     # via
     #   ansible-compat
     #   ansible-lint
-ansible-lint==25.1.3
+ansible-lint==25.12.0
     # via py-vibracore (pyproject.toml)
-argcomplete==3.6.2
+argcomplete==3.6.3
     # via yq
 asteroid-sphinx-theme==0.0.3
     # via py-vibracore (pyproject.toml)
 asttokens==2.4.1
     # via stack-data
-attrs==23.1.0
+attrs==23.2.0
     # via
     #   jsonschema
     #   rasterio
     #   referencing
-aws-sam-translator==1.97.0
+aws-sam-translator==1.105.0
     # via cfn-lint
-babel==2.14.0
+babel==2.17.0
     # via sphinx
-black==25.1.0
+black==25.11.0
     # via
     #   ansible-lint
     #   py-vibracore (pyproject.toml)
-boto3==1.37.38
+boto3==1.42.4
     # via aws-sam-translator
-botocore==1.37.38
+botocore==1.42.4
     # via
     #   boto3
     #   s3transfer
-bracex==2.5.post1
+bracex==2.6
     # via wcmatch
 cems-nuclei[client]==3.0.1
     # via py-vibracore (pyproject.toml)
@@ -55,15 +55,15 @@ certifi==2023.11.17
     #   requests
 cffi==1.17.1
     # via cryptography
-cfn-lint==1.25.1
+cfn-lint==1.42.0
     # via py-vibracore (pyproject.toml)
 chardet==5.2.0
     # via
     #   diff-cover
     #   sqlfluff
-charset-normalizer==3.3.2
+charset-normalizer==3.4.4
     # via requests
-click==8.1.3
+click==8.3.1
     # via
     #   black
     #   click-plugins
@@ -71,51 +71,51 @@ click==8.1.3
     #   mercantile
     #   rasterio
     #   sqlfluff
-click-plugins==1.1.1
+click-plugins==1.1.1.2
     # via rasterio
 cligj==0.7.2
     # via rasterio
 colorama==0.4.6
     # via sqlfluff
-comm==0.2.0
+comm==0.2.3
     # via ipywidgets
-contextily==1.6.2
+contextily==1.7.0
     # via py-vibracore (pyproject.toml)
-contourpy==1.2.0
+contourpy==1.3.3
     # via matplotlib
 coverage==6.5.0
     # via coveralls
 coveralls==3.3.1
     # via py-vibracore (pyproject.toml)
-cpplint==2.0.0
+cpplint==2.0.2
     # via py-vibracore (pyproject.toml)
-cryptography==44.0.2
+cryptography==44.0.3
     # via ansible-core
 cycler==0.12.1
     # via matplotlib
-decorator==5.1.1
+decorator==5.2.1
     # via ipython
-diff-cover==9.2.2
+diff-cover==9.7.2
     # via sqlfluff
 docopt==0.6.2
     # via coveralls
-docutils==0.21.2
+docutils==0.22.3
     # via
     #   sphinx
     #   sphinx-rtd-theme
-executing==2.0.1
+executing==2.2.1
     # via stack-data
-filelock==3.18.0
+filelock==3.20.0
     # via ansible-lint
-flake8==7.1.2
+flake8==7.3.0
     # via py-vibracore (pyproject.toml)
 fonttools==4.47.0
     # via matplotlib
-gef-file-to-map==0.2.0
+gef-file-to-map==0.2.1
     # via pygef
-geographiclib==2.0
+geographiclib==2.1
     # via geopy
-geopandas==1.0.1
+geopandas==1.1.1
     # via py-vibracore (pyproject.toml)
 geopy==2.4.1
     # via contextily
@@ -123,26 +123,26 @@ idna==3.6
     # via requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==7.0.0
+importlib-metadata==7.2.1
     # via ansible-lint
-iniconfig==2.0.0
+iniconfig==2.3.0
     # via pytest
-ipympl==0.9.7
+ipympl==0.9.8
     # via py-vibracore (pyproject.toml)
-ipython==9.1.0
+ipython==9.8.0
     # via
     #   ipympl
     #   ipywidgets
     #   py-vibracore (pyproject.toml)
 ipython-pygments-lexers==1.1.1
     # via ipython
-ipywidgets==8.1.1
+ipywidgets==8.1.8
     # via
     #   ipympl
     #   tqdm
-isort==6.0.0
+isort==6.1.0
     # via py-vibracore (pyproject.toml)
-jedi==0.19.1
+jedi==0.19.2
     # via ipython
 jinja2==3.1.2
     # via
@@ -154,33 +154,33 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-joblib==1.3.2
+joblib==1.5.2
     # via contextily
 jsonpatch==1.33
     # via cfn-lint
 jsonpointer==3.0.0
     # via jsonpatch
-jsonschema==4.23.0
+jsonschema==4.25.1
     # via
     #   ansible-compat
     #   ansible-lint
     #   aws-sam-translator
 jsonschema-specifications==2024.10.1
     # via jsonschema
-jupyterlab-widgets==3.0.9
+jupyterlab-widgets==3.0.16
     # via ipywidgets
-kiwisolver==1.4.5
+kiwisolver==1.4.9
     # via matplotlib
-lxml==5.3.2
+lxml==5.4.0
     # via pygef
-markupsafe==2.1.3
+markupsafe==2.1.5
     # via jinja2
-matplotlib==3.8.2
+matplotlib==3.10.7
     # via
     #   contextily
     #   ipympl
     #   pygef
-matplotlib-inline==0.1.6
+matplotlib-inline==0.2.1
     # via ipython
 mccabe==0.7.0
     # via flake8
@@ -188,15 +188,15 @@ mercantile==1.2.1
     # via contextily
 mpmath==1.3.0
     # via sympy
-mypy==1.15.0
+mypy==1.19.0
     # via py-vibracore (pyproject.toml)
-mypy-extensions==1.0.0
+mypy-extensions==1.1.0
     # via
     #   black
     #   mypy
-networkx==3.4.2
+networkx==3.6
     # via cfn-lint
-numpy==1.26.2
+numpy==1.26.4
     # via
     #   contourpy
     #   geopandas
@@ -221,11 +221,11 @@ packaging==23.2
     #   pyogrio
     #   pytest
     #   sphinx
-pandas==2.1.4
+pandas==2.3.3
     # via geopandas
-parso==0.8.3
+parso==0.8.5
     # via jedi
-pathspec==0.11.1
+pathspec==0.12.1
     # via
     #   ansible-lint
     #   black
@@ -238,64 +238,64 @@ pillow==10.1.0
     #   contextily
     #   ipympl
     #   matplotlib
-platformdirs==3.5.1
+platformdirs==3.11.0
     # via
     #   black
     #   sqlfluff
-pluggy==1.3.0
+pluggy==1.6.0
     # via
     #   diff-cover
     #   pytest
-polars==1.27.1
+polars==1.35.2
     # via pygef
-prompt-toolkit==3.0.43
+prompt-toolkit==3.0.52
     # via ipython
 ptyprocess==0.7.0
     # via pexpect
-pure-eval==0.2.2
+pure-eval==0.2.3
     # via stack-data
-pycodestyle==2.12.1
+pycodestyle==2.14.0
     # via flake8
-pycparser==2.22
+pycparser==2.23
     # via cffi
-pydantic==2.9.2
+pydantic==2.12.5
     # via aws-sam-translator
-pydantic-core==2.23.4
+pydantic-core==2.41.5
     # via pydantic
-pyflakes==3.2.0
+pyflakes==3.4.0
     # via flake8
-pygef==0.11.1
+pygef==0.14.0
     # via py-vibracore (pyproject.toml)
-pygments==2.17.2
+pygments==2.19.2
     # via
     #   diff-cover
     #   ipython
     #   ipython-pygments-lexers
     #   sphinx
-pyjwt==2.6.0
+pyjwt==2.10.1
     # via cems-nuclei
-pyogrio==0.10.0
+pyogrio==0.12.1
     # via
     #   geopandas
     #   py-vibracore (pyproject.toml)
-pyparsing==3.1.1
+pyparsing==3.2.5
     # via
     #   matplotlib
     #   snuggs
-pyproj==3.6.1
+pyproj==3.7.2
     # via geopandas
-pytest==7.4.3
+pytest==7.4.4
     # via
     #   py-vibracore (pyproject.toml)
     #   sqlfluff
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   botocore
     #   matplotlib
     #   pandas
-pytz==2023.3.post1
+pytz==2023.4
     # via pandas
-pyyaml==6.0.2
+pyyaml==6.0.3
     # via
     #   ansible-compat
     #   ansible-core
@@ -304,9 +304,9 @@ pyyaml==6.0.2
     #   sqlfluff
     #   yamllint
     #   yq
-rasterio==1.3.9
+rasterio==1.4.3
     # via contextily
-referencing==0.36.2
+referencing==0.37.0
     # via
     #   ansible-lint
     #   jsonschema
@@ -322,27 +322,27 @@ requests==2.31.0
     #   coveralls
     #   requests-mock
     #   sphinx
-requests-mock==1.11.0
+requests-mock==1.12.1
     # via py-vibracore (pyproject.toml)
-resolvelib==1.0.1
+resolvelib==1.2.1
     # via ansible-core
 roman-numerals-py==3.1.0
     # via sphinx
-rpds-py==0.24.0
+rpds-py==0.30.0
     # via
     #   jsonschema
     #   referencing
-ruamel-yaml==0.18.10
+ruamel-yaml==0.18.16
     # via ansible-lint
-ruamel-yaml-clib==0.2.12
+ruamel-yaml-clib==0.2.15
     # via ruamel-yaml
-s3transfer==0.11.5
+s3transfer==0.16.0
     # via boto3
-scipy==1.15.2
+scipy==1.16.3
     # via py-vibracore (pyproject.toml)
-shapely==2.0.2
+shapely==2.1.2
     # via geopandas
-six==1.16.0
+six==1.17.0
     # via
     #   asttokens
     #   python-dateutil
@@ -361,11 +361,11 @@ sphinx==8.2.3
     #   sphinxcontrib-jquery
     #   sphinxcontrib-qthelp
     #   sphinxcontrib-serializinghtml
-sphinx-autodoc-typehints==3.1.0
+sphinx-autodoc-typehints==3.5.2
     # via py-vibracore (pyproject.toml)
 sphinx-rtd-theme==3.0.2
     # via py-vibracore (pyproject.toml)
-sphinxcontrib-applehelp==1.0.7
+sphinxcontrib-applehelp==1.0.8
     # via sphinx
 sphinxcontrib-devhelp==2.0.0
     # via sphinx
@@ -375,11 +375,11 @@ sphinxcontrib-jquery==4.1
     # via sphinx-rtd-theme
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
-sphinxcontrib-qthelp==1.0.6
+sphinxcontrib-qthelp==1.0.8
     # via sphinx
-sphinxcontrib-serializinghtml==1.1.9
+sphinxcontrib-serializinghtml==1.1.10
     # via sphinx
-sqlfluff==3.3.1
+sqlfluff==3.5.0
     # via py-vibracore (pyproject.toml)
 stack-data==0.6.3
     # via ipython
@@ -387,24 +387,24 @@ subprocess-tee==0.4.2
     # via
     #   ansible-compat
     #   ansible-lint
-sympy==1.13.3
+sympy==1.14.0
     # via cfn-lint
-tblib==3.1.0
+tblib==3.2.2
     # via sqlfluff
-tomlkit==0.13.2
+tomlkit==0.13.3
     # via yq
 tqdm[notebook]==4.67.1
     # via
     #   py-vibracore (pyproject.toml)
     #   sqlfluff
-traitlets==5.14.0
+traitlets==5.14.3
     # via
     #   comm
     #   ipympl
     #   ipython
     #   ipywidgets
     #   matplotlib-inline
-typing-extensions==4.7.1
+typing-extensions==4.15.0
     # via
     #   aws-sam-translator
     #   cfn-lint
@@ -413,23 +413,23 @@ typing-extensions==4.7.1
     #   pydantic
     #   pydantic-core
     #   referencing
-tzdata==2023.3
+tzdata==2023.4
     # via pandas
 urllib3==2.1.0
     # via
     #   botocore
     #   requests
-wcmatch==10.0
+wcmatch==10.1
     # via ansible-lint
-wcwidth==0.2.12
+wcwidth==0.2.14
     # via prompt-toolkit
-widgetsnbextension==4.0.9
+widgetsnbextension==4.0.15
     # via ipywidgets
-xmltodict==0.14.2
+xmltodict==0.15.1
     # via yq
 xyzservices==2023.10.1
     # via contextily
-yamllint==1.35.1
+yamllint==1.37.1
     # via
     #   ansible-lint
     #   py-vibracore (pyproject.toml)
