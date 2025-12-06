@@ -415,7 +415,7 @@ typing-extensions==4.7.1
     #   referencing
 tzdata==2023.3
     # via pandas
-urllib3==2.1.0
+urllib3==2.6.0
     # via
     #   botocore
     #   requests
