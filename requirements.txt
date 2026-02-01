@@ -115,7 +115,7 @@ gef-file-to-map==0.2.0
     # via pygef
 geographiclib==2.0
     # via geopy
-geopandas==1.0.1
+geopandas==1.1.2
     # via py-vibracore (pyproject.toml)
 geopy==2.4.1
     # via contextily
