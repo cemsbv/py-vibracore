@@ -89,7 +89,7 @@ coveralls==3.3.1
     # via py-vibracore (pyproject.toml)
 cpplint==2.0.0
     # via py-vibracore (pyproject.toml)
-cryptography==44.0.2
+cryptography==46.0.5
     # via ansible-core
 cycler==0.12.1
     # via matplotlib
