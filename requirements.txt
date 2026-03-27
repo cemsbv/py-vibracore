@@ -24,7 +24,7 @@ asteroid-sphinx-theme==0.0.3
     # via py-vibracore (pyproject.toml)
 asttokens==2.4.1
     # via stack-data
-attrs==23.1.0
+attrs==26.1.0
     # via
     #   jsonschema
     #   rasterio
