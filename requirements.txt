@@ -85,7 +85,7 @@ contourpy==1.2.0
     # via matplotlib
 coverage==6.5.0
     # via coveralls
-coveralls==3.3.1
+coveralls==4.1.0
     # via py-vibracore (pyproject.toml)
 cpplint==2.0.0
     # via py-vibracore (pyproject.toml)
