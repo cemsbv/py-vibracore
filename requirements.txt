@@ -272,7 +272,7 @@ pygments==2.17.2
     #   ipython
     #   ipython-pygments-lexers
     #   sphinx
-pyjwt==2.6.0
+pyjwt==2.13.0
     # via cems-nuclei
 pyogrio==0.10.0
     # via
