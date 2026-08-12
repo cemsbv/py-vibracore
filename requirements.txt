@@ -10,7 +10,7 @@ alabaster==1.0.0
     # via sphinx
 annotated-types==0.7.0
     # via pydantic
-ansible-compat==25.1.5
+ansible-compat==26.8.0
     # via ansible-lint
 ansible-core==2.18.5
     # via
