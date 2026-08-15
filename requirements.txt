@@ -57,7 +57,7 @@ cffi==1.17.1
     # via cryptography
 cfn-lint==1.25.1
     # via py-vibracore (pyproject.toml)
-chardet==5.2.0
+chardet==7.6.0
     # via
     #   diff-cover
     #   sqlfluff
