@@ -83,7 +83,7 @@ contextily==1.6.2
     # via py-vibracore (pyproject.toml)
 contourpy==1.2.0
     # via matplotlib
-coverage==6.5.0
+coverage==7.16.0
     # via coveralls
 coveralls==3.3.1
     # via py-vibracore (pyproject.toml)
