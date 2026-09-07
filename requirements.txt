@@ -379,7 +379,7 @@ sphinxcontrib-qthelp==1.0.6
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.9
     # via sphinx
-sqlfluff==3.3.1
+sqlfluff==4.2.0
     # via py-vibracore (pyproject.toml)
 stack-data==0.6.3
     # via ipython
