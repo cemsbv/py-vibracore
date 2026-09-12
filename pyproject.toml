@@ -9,7 +9,7 @@ description = "Public python SDK for the CEMS VibraCore web-API."
 requires-python = ">=3.11"
 dependencies = [
     "pygef>=0.11.1,<0.12",
-    "cems-nuclei[client]>=3.0.0, <4",
+    "cems-nuclei[client]>=3.2.1, <4",
     "geopandas>=1.0.1,<2",
     "pyogrio>=0.10.0,<0.11",
     "scipy>=1.15.2,<2"
