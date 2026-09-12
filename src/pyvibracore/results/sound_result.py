@@ -274,10 +274,13 @@ def get_normative_building(
 
     gdf = buildings.get(
         [
-            any(item in category for item in row.split(",")) if row else False
+            any(item in category for item in row.split(","))
+            if isinstance(row, str) and row is not None
+            else False
             for row in buildings["gebruiksdoel"].to_list()
         ]
     )
+
     if gdf.empty:
         logging.error(f"ValueError: No buildings with category {category}.")
         return None
