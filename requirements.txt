@@ -30,7 +30,7 @@ aws-sam-translator==1.97.0
     # via cfn-lint
 babel==2.14.0
     # via sphinx
-black==25.1.0
+black==26.3.1
     # via
     #   py-vibracore (pyproject.toml)
     #   ansible-lint
