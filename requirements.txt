@@ -442,5 +442,5 @@ yamllint==1.35.1
     #   ansible-lint
 yq==3.4.3
     # via py-vibracore (pyproject.toml)
-zipp==3.17.0
+zipp==3.19.1
     # via importlib-metadata
