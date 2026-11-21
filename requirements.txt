@@ -426,7 +426,7 @@ urllib3==2.1.0
     # via
     #   botocore
     #   requests
-wcmatch==10.0
+wcmatch==11.2
     # via ansible-lint
 wcwidth==0.2.12
     # via prompt-toolkit
